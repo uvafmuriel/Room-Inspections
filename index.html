@@ -43,10 +43,13 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .cat-tab{padding:10px 6px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;text-align:center;transition:all .15s;-webkit-appearance:none}
 .cat-tab.active{background:#1a1a18;border-color:#1a1a18;color:#f5f3ee}
 .rooms-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
-.room-chip{padding:10px 4px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;text-align:center;transition:all .15s;-webkit-appearance:none}
+.room-chip{padding:10px 4px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;text-align:center;transition:all .15s;-webkit-appearance:none;position:relative}
 .room-chip.selected{background:#1a1a18;border-color:#1a1a18;color:#f5f3ee}
+.room-chip.done{background:var(--green-light);border-color:var(--green);color:var(--green-text);}
+.room-chip.done::after{content:'✓';position:absolute;top:2px;right:4px;font-size:9px;font-weight:700;color:var(--green)}
 .start-btn{width:100%;margin-top:28px;padding:16px;background:var(--accent);color:white;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;border:none;border-radius:var(--radius);cursor:pointer;transition:background .15s}
 .start-btn:active{background:var(--accent-text)}
+.reset-btn{width:100%;margin-top:10px;padding:11px;background:transparent;color:var(--text3);border:1px solid var(--border);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;}
 .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:58px;z-index:90}
 .stat-cell{padding:10px 6px;text-align:center;border-right:1px solid var(--border)}
 .stat-cell:last-child{border-right:none}
@@ -71,22 +74,14 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .item-top{display:flex;align-items:center;gap:8px}
 .item-name{flex:1;font-size:14px;font-weight:500;color:var(--text);line-height:1.3}
 .item-checks{display:flex;gap:6px;flex-shrink:0}
-.check-pill{display:flex;align-items:center;padding:6px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--bg);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .12s;white-space:nowrap;-webkit-appearance:none;touch-action:manipulation}
-.check-pill.missing.active{background:var(--amber-light);border-color:var(--amber);color:var(--amber-text)}
-.check-pill.broken.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent-text)}
 .yn-pill{display:flex;align-items:center;padding:6px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--bg);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .12s;white-space:nowrap;-webkit-appearance:none;touch-action:manipulation}
 .yn-pill.yes.active{background:var(--green-light);border-color:var(--green);color:var(--green-text)}
 .yn-pill.no.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent-text)}
-.floor-pill{display:flex;align-items:center;padding:6px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--bg);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .12s;white-space:nowrap;-webkit-appearance:none;touch-action:manipulation}
-.floor-pill.sat.active{background:var(--green-light);border-color:var(--green);color:var(--green-text)}
-.floor-pill.repair.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent-text)}
 .item-note{margin-top:8px;width:100%;padding:9px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;transition:border-color .15s;display:none;resize:none;min-height:38px}
 .item-note.visible{display:block}
 .item-note:focus{border-color:var(--accent)}
-/* Note toggle shows pencil + Edit text */
 .note-toggle{display:flex;align-items:center;gap:4px;padding:5px 9px;border-radius:7px;background:transparent;border:1.5px solid var(--border);cursor:pointer;flex-shrink:0;color:var(--text3);font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;transition:all .12s;-webkit-appearance:none}
 .note-toggle.active{background:var(--surface2);border-color:var(--border2);color:var(--text2)}
-.item-wo-row{display:flex;align-items:center;padding:8px 0 2px;gap:8px}.item-wo-label{flex:1;font-size:12px;color:var(--text2)}.item-wo-btns{display:flex;gap:5px}.item-wo-btn{padding:5px 12px;border-radius:99px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .12s;-webkit-appearance:none;touch-action:manipulation}.item-wo-btn.yes.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent-text)}.item-wo-btn.no.active{background:var(--green-light);border-color:var(--green);color:var(--green-text)}
 .add-item-row{padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:center}
 .add-item-input{flex:1;padding:8px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none}
 .add-item-input:focus{border-color:var(--accent)}
@@ -102,7 +97,6 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .bottom-btn{flex:1;padding:14px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none;touch-action:manipulation}
 .bottom-btn.outline{background:rgba(255,255,255,.12);color:#f5f3ee}
 .bottom-btn.primary{background:var(--accent);color:white}
-/* Warning banner */
 .warn-banner{background:var(--amber-light);border:1px solid var(--amber);border-radius:var(--radius-sm);padding:12px 14px;margin:0 12px 12px;font-size:13px;color:var(--amber-text);font-weight:500;display:none}
 .warn-banner.visible{display:block}
 .summary-wrap{padding:16px 12px 100px;max-width:480px;margin:0 auto}
@@ -120,7 +114,6 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .tag.yes{background:var(--green-light);color:var(--green-text)}
 .tag.wo{background:#ede9e2;color:#5a5a55}
 .complete-banner{background:var(--green-light);border:1px solid var(--green);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;font-size:14px;color:var(--green-text);font-weight:500}
-/* Export section: big primary send button, small secondary CSV */
 .export-section{margin-top:20px;display:flex;flex-direction:column;gap:10px}
 .send-btn{width:100%;padding:18px;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:17px;font-weight:600;cursor:pointer;border:none;background:var(--accent);color:white;touch-action:manipulation;-webkit-appearance:none;letter-spacing:-.2px}
 .send-btn:active{background:var(--accent-text)}
@@ -172,6 +165,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
       </select>
     </div>
     <button class="start-btn" onclick="startInspection()">Begin inspection →</button>
+    <button class="reset-btn" onclick="resetProgress()">Clear completed rooms</button>
   </div>
 </div>
 
@@ -264,6 +258,24 @@ let state={}, meta={}, selectedRoom='', activeCat=0;
 
 document.getElementById('insp-date').value = new Date().toISOString().slice(0,10);
 
+// ── localStorage helpers ──
+function getDoneRooms(){
+  try { return JSON.parse(localStorage.getItem('doneRooms')||'[]'); } catch(e){ return []; }
+}
+function markRoomDone(room){
+  const done = getDoneRooms();
+  if(!done.includes(room)){ done.push(room); localStorage.setItem('doneRooms', JSON.stringify(done)); }
+  document.querySelectorAll('.room-chip').forEach(btn => {
+    if(btn.textContent.trim() === room) btn.classList.add('done');
+  });
+}
+function resetProgress(){
+  if(confirm('Clear all completed rooms on this device?')){
+    localStorage.removeItem('doneRooms');
+    buildRoomChips(activeCat);
+  }
+}
+
 const catTabsEl = document.getElementById('cat-tabs');
 ROOM_CATEGORIES.forEach((cat,i) => {
   const btn = document.createElement('button');
@@ -281,10 +293,12 @@ ROOM_CATEGORIES.forEach((cat,i) => {
 function buildRoomChips(ci) {
   const grid = document.getElementById('rooms-grid');
   grid.innerHTML = '';
+  const done = getDoneRooms();
   ROOM_CATEGORIES[ci].rooms.forEach(r => {
     const btn = document.createElement('button');
     btn.className = 'room-chip';
     btn.textContent = r;
+    if(done.includes(r)) btn.classList.add('done');
     btn.onclick = () => {
       document.querySelectorAll('.room-chip').forEach(c => c.classList.remove('selected'));
       btn.classList.add('selected');
@@ -363,8 +377,6 @@ function buildInspectPage(sections){
       <input class="add-item-input" id="addinput-${sec.id}" type="text" placeholder="Add a task or item…" />
       <button class="add-item-btn" onclick="addCustomItem('${sec.id}')">+ Add</button>`;
     body.appendChild(addRow);
-
-    // Section WO row
     const wo = document.createElement('div');
     wo.className = 'wo-row';
     wo.innerHTML = `
@@ -374,7 +386,6 @@ function buildInspectPage(sections){
         <button class="wo-btn no" id="wo-n-${sec.id}" onclick="setWO('${sec.id}','no')">No</button>
       </div>`;
     body.appendChild(wo);
-
     card.appendChild(header);
     card.appendChild(body);
     wrap.appendChild(card);
@@ -386,7 +397,6 @@ function buildInspectPage(sections){
       const sid = safeId(secId+'___'+itemName);
       if(s.yn==='yes') document.getElementById('yn-y-'+sid)?.classList.add('active');
       if(s.yn==='no') document.getElementById('yn-n-'+sid)?.classList.add('active');
-
     });
   });
 }
@@ -395,20 +405,9 @@ function addItemRow(body, secId, itemName, itemType){
   const row = document.createElement('div');
   row.className = 'item-row';
   const sid = safeId(secId+'___'+itemName);
-  let buttonsHTML = '';
-  if(itemType === 'condition'){
-    buttonsHTML = `
-      <button class="check-pill missing" id="miss-${sid}" onclick="toggleCondition('${secId}','${itemName}','missing')">Missing</button>
-      <button class="check-pill broken" id="brok-${sid}" onclick="toggleCondition('${secId}','${itemName}','broken')">Broken</button>`;
-  } else if(itemType === 'floor'){
-    buttonsHTML = `
-      <button class="floor-pill sat" id="fl-s-${sid}" onclick="setFloor('${secId}','${itemName}','sat')">Satisfactory</button>
-      <button class="floor-pill repair" id="fl-r-${sid}" onclick="setFloor('${secId}','${itemName}','repair')">Needs Repair</button>`;
-  } else {
-    buttonsHTML = `
-      <button class="yn-pill yes" id="yn-y-${sid}" onclick="setYN('${secId}','${itemName}','yes')">Yes</button>
-      <button class="yn-pill no" id="yn-n-${sid}" onclick="setYN('${secId}','${itemName}','no')">No</button>`;
-  }
+  let buttonsHTML = `
+    <button class="yn-pill yes" id="yn-y-${sid}" onclick="setYN('${secId}','${itemName}','yes')">Yes</button>
+    <button class="yn-pill no" id="yn-n-${sid}" onclick="setYN('${secId}','${itemName}','no')">No</button>`;
   row.innerHTML = `
     <div class="item-top">
       <span class="item-name">${itemName}</span>
@@ -420,8 +419,6 @@ function addItemRow(body, secId, itemName, itemType){
   const addRow = document.getElementById('addinput-'+secId)?.parentElement;
   if(addRow) body.insertBefore(row, addRow);
   else body.appendChild(row);
-
-
 }
 
 function addCustomItem(secId){
@@ -431,19 +428,12 @@ function addCustomItem(secId){
   state[secId].items[val] = { type:'functional', missing:false, broken:false, yn:'yes', floor:null, note:'' };
   const body = document.getElementById('body-'+secId);
   addItemRow(body, secId, val, 'functional');
+  const sid = safeId(secId+'___'+val);
+  document.getElementById('yn-y-'+sid)?.classList.add('active');
   updateSectionStatus(secId);
   refreshStats();
   input.value = '';
   input.focus();
-}
-
-function toggleCondition(secId, item, type){
-  const s = state[secId].items[item];
-  s[type] = !s[type];
-  const sid = safeId(secId+'___'+item);
-  document.getElementById((type==='missing'?'miss-':'brok-')+sid)?.classList.toggle('active', s[type]);
-  refreshStats();
-  updateSectionStatus(secId);
 }
 
 function setYN(secId, item, val){
@@ -454,18 +444,6 @@ function setYN(secId, item, val){
   const n = document.getElementById('yn-n-'+sid);
   if(y) y.className = 'yn-pill yes' + (s.yn==='yes'?' active':'');
   if(n) n.className = 'yn-pill no' + (s.yn==='no'?' active':'');
-  refreshStats();
-  updateSectionStatus(secId);
-}
-
-function setFloor(secId, item, val){
-  const s = state[secId].items[item];
-  s.floor = s.floor === val ? null : val;
-  const sid = safeId(secId+'___'+item);
-  const sat = document.getElementById('fl-s-'+sid);
-  const rep = document.getElementById('fl-r-'+sid);
-  if(sat) sat.className = 'floor-pill sat' + (s.floor==='sat'?' active':'');
-  if(rep) rep.className = 'floor-pill repair' + (s.floor==='repair'?' active':'');
   refreshStats();
   updateSectionStatus(secId);
 }
@@ -502,10 +480,9 @@ function refreshStats(){
   Object.entries(state).forEach(([sid, sec]) => {
     Object.values(sec.items).forEach(it => {
       total++;
-      if(it.type==='condition' && (it.missing||it.broken)){ issues++; }
-      if(it.type==='functional' && it.yn==='no'){ issues++; nos++; }
+      if(it.yn==='no'){ issues++; nos++; }
     });
-    Object.values(sec.items).forEach(it => { if(it.wo==='yes') wo++; });
+    if(sec.wo==='yes') wo++;
   });
   document.getElementById('s-total').textContent = total;
   document.getElementById('s-issues').textContent = issues;
@@ -523,18 +500,10 @@ function updateSectionStatus(secId){
 }
 
 function reviewAndExport(){
-  const unanswered = countUnanswered();
   const banner = document.getElementById('warn-banner');
-  if(unanswered > 0){
-    banner.textContent = '⚠️ ' + unanswered + ' item' + (unanswered>1?'s are':' is') + ' unanswered. Proceeding in 2 seconds…';
-    banner.classList.add('visible');
-    window.scrollTo(0,58);
-    setTimeout(() => { buildSummary(); showPage('page-summary'); }, 2000);
-  } else {
-    banner.classList.remove('visible');
-    buildSummary();
-    showPage('page-summary');
-  }
+  banner.classList.remove('visible');
+  buildSummary();
+  showPage('page-summary');
 }
 
 function showPage(id){
@@ -567,17 +536,11 @@ function buildSummary(){
     });
   });
 
-  const unanswered = countUnanswered();
-
   wrap.innerHTML = `
     <div class="summary-room-header">
       <div class="summary-room-name">${meta.room}</div>
       <div class="summary-room-meta">${meta.inspector} · ${meta.date} · ${getTimestamp()}${meta.trade?' · '+meta.trade:''}</div>
     </div>`;
-
-  if(unanswered > 0){
-    wrap.innerHTML += `<div class="complete-banner" style="background:var(--amber-light);border-color:var(--amber);color:var(--amber-text)">⚠️ ${unanswered} unanswered item${unanswered>1?'s':''}</div>`;
-  }
 
   if(allIssues.length===0){
     wrap.innerHTML += `<div class="complete-banner">✅ No issues recorded — room looks good!</div>`;
@@ -587,16 +550,8 @@ function buildSummary(){
     allIssues.forEach(i => {
       if(!bySection[i.section]) bySection[i.section]='';
       let tags = '';
-      if(i.type==='condition'){
-        if(i.missing) tags += '<span class="tag missing">Missing</span>';
-        if(i.broken) tags += '<span class="tag broken">Broken</span>';
-      } else if(i.type==='floor'){
-        if(i.floor==='sat') tags += '<span class="tag yes">Satisfactory</span>';
-        if(i.floor==='repair') tags += '<span class="tag broken">Needs Repair</span>';
-      } else {
-        if(i.yn==='no') tags += '<span class="tag no">No</span>';
-        if(i.yn==='yes') tags += '<span class="tag yes">Yes</span>';
-      }
+      if(i.yn==='no') tags += '<span class="tag no">No</span>';
+      if(i.yn==='yes') tags += '<span class="tag yes">Yes</span>';
       if(i.wo==='yes') tags += '<span class="tag wo">WO needed</span>';
       bySection[i.section] += `<div class="summary-item">
         <div class="summary-item-name">${i.item}</div>
@@ -627,31 +582,22 @@ function startNewRoom(){
   document.querySelectorAll('.room-chip').forEach(c => c.classList.remove('selected'));
   document.getElementById('menu-btn').style.display = 'none';
   document.getElementById('topbar-sub').textContent = 'Lawn & Range';
+  buildRoomChips(activeCat);
   showPage('page-setup');
 }
 
 function exportCSV(){
   const sections = getFilteredSections();
-  let csv = 'Inspector,Room,Date,Time,Trade,Section,Item,Type,Status,Notes,WO Required\n';
+  let csv = 'Inspector,Room,Date,Time,Trade,Section,Item,Status,Notes,WO Required\n';
   const time = getTimestamp();
   sections.forEach(sec => {
     const secState = state[sec.id];
     if(!secState) return;
     Object.entries(secState.items).forEach(([item, val]) => {
-      let status = '';
-      if(val.type==='condition'){
-        const flags = [];
-        if(val.missing) flags.push('Missing');
-        if(val.broken) flags.push('Broken');
-        status = flags.join('/') || 'OK';
-      } else if(val.type==='floor'){
-        status = val.floor==='sat'?'Satisfactory':val.floor==='repair'?'Needs Repair':'Not answered';
-      } else {
-        status = val.yn ? val.yn.charAt(0).toUpperCase()+val.yn.slice(1) : 'Not answered';
-      }
+      const status = val.yn ? val.yn.charAt(0).toUpperCase()+val.yn.slice(1) : 'Not answered';
       csv += [meta.inspector, meta.room, meta.date, time, meta.trade||'All trades',
-        sec.label, item, val.type==='condition'?'Condition':'Functional',
-        status, '"'+(val.note||'').replace(/"/g,'""')+'"', secState.wo||'—'].join(',') + '\n';
+        sec.label, item, status,
+        '"'+(val.note||'').replace(/"/g,'""')+'"', secState.wo||'—'].join(',') + '\n';
     });
   });
   const a = document.createElement('a');
@@ -674,31 +620,18 @@ function emailSummary(){
     Object.entries(secState.items).forEach(([item, val]) => {
       if(hasIssue(val) || val.note){
         foundIssues = true;
-        let flag = '';
-        if(val.type==='condition'){
-          if(val.missing) flag += '[MISSING] ';
-          if(val.broken) flag += '[BROKEN] ';
-        } else if(val.type==='floor'){
-          if(val.floor==='sat') flag = '[SATISFACTORY] ';
-          if(val.floor==='repair') flag = '[NEEDS REPAIR] ';
-        } else {
-          if(val.yn==='no') flag = '[NO] ';
-          if(val.yn==='yes') flag = '[YES] ';
-        }
+        let flag = val.yn==='no' ? '[NO] ' : val.yn==='yes' ? '[YES] ' : '';
         const wo = secState.wo === 'yes' ? '| WO: YES' : '| WO: NO';
-        const secLabel = sec.label;
         const tradeLabel = meta.trade || 'All trades';
-        lines.push(`  - ${item}: ${flag.trim()} | TRADE: ${tradeLabel} — ${secLabel} | ${wo}${val.note?' | NOTE: '+val.note:''}`);
+        lines.push(`  - ${item}: ${flag.trim()} | TRADE: ${tradeLabel} — ${sec.label} | ${wo}${val.note?' | NOTE: '+val.note:''}`);
       }
     });
     if(lines.length) body += `${sec.label}${secState.wo==='yes'?' (WO REQUIRED)':''}:\n${lines.join('\n')}\n\n`;
   });
-  const unanswered = countUnanswered();
-  if(unanswered > 0) body += `Note: ${unanswered} item${unanswered>1?'s were':' was'} not answered.\n\n`;
   if(!foundIssues) body += 'No issues recorded — room looks good!\n';
   const subject = `Room Inspection — ${meta.room} — ${meta.date} ${time}`;
   window.location.href = `mailto:gre4se@virginia.edu?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  // Show "Start new room" after sending
+  markRoomDone(meta.room);
   setTimeout(() => {
     const existing = document.getElementById('new-room-reveal');
     if(!existing){
