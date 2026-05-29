@@ -262,9 +262,11 @@ document.getElementById('insp-date').value = new Date().toISOString().slice(0,10
 function getDoneRooms(){
   try { return JSON.parse(localStorage.getItem('doneRooms')||'[]'); } catch(e){ return []; }
 }
+function doneKey(area, room){ return area + '::' + room; }
 function markRoomDone(room){
+  const key = doneKey(ROOM_CATEGORIES[activeCat].label, room);
   const done = getDoneRooms();
-  if(!done.includes(room)){ done.push(room); localStorage.setItem('doneRooms', JSON.stringify(done)); }
+  if(!done.includes(key)){ done.push(key); localStorage.setItem('doneRooms', JSON.stringify(done)); }
   document.querySelectorAll('.room-chip').forEach(btn => {
     if(btn.textContent.trim() === room) btn.classList.add('done');
   });
@@ -298,7 +300,7 @@ function buildRoomChips(ci) {
     const btn = document.createElement('button');
     btn.className = 'room-chip';
     btn.textContent = r;
-    if(done.includes(r)) btn.classList.add('done');
+    if(done.includes(doneKey(ROOM_CATEGORIES[ci].label, r))) btn.classList.add('done');
     btn.onclick = () => {
       document.querySelectorAll('.room-chip').forEach(c => c.classList.remove('selected'));
       btn.classList.add('selected');
