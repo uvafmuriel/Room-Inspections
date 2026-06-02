@@ -155,17 +155,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
   <div class="submit-msg" id="submit-msg">Saving...</div>
 </div>
 
-<!-- Completion note modal -->
-<div class="modal-overlay" id="done-modal" onclick="if(event.target===this)closeDoneModal()">
-  <div class="modal">
-    <h3>Mark as Done</h3>
-    <textarea id="done-note" rows="3" placeholder="Optional: add a completion note…"></textarea>
-    <div class="modal-btns">
-      <button class="modal-btn outline" onclick="closeDoneModal()">Cancel</button>
-      <button class="modal-btn primary" id="confirm-done-btn" onclick="confirmDone()">Mark Done ✓</button>
-    </div>
-  </div>
-</div>
+<!-- Completion note modal removed - now inline on card -->
 
 <!-- INSPECT MODE -->
 <div class="page active" id="page-inspect">
@@ -226,6 +216,10 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
       </div>
     </div>
     <div class="issues-list" id="issues-list"></div>
+    <div style="padding:12px 16px;background:var(--surface);border-top:1px solid var(--border);margin-bottom:80px">
+      <div style="font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px">General Notes (optional)</div>
+      <textarea id="general-note" rows="2" placeholder="Any additional notes for this room…" style="width:100%;padding:10px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;resize:none;"></textarea>
+    </div>
     <div class="bottom-bar">
       <button class="bottom-btn outline" onclick="goBack()">← Back</button>
       <button class="bottom-btn primary" onclick="submitIssues()">Submit →</button>
@@ -563,15 +557,16 @@ async function submitIssues() {
   showSpinner('Saving...');
   try {
     await loadDB();
+    const generalNote = document.getElementById('general-note')?.value.trim() || '';
     if(selected.length===0) {
       db.issues.push({ id:Date.now().toString(), room:selectedRoom, area:selectedArea, trade,
-        inspector, timestamp, cat:'General', item:'No issues', note:'', done:true, allClear:true, assignedTo:[] });
+        inspector, timestamp, cat:'General', item:'No issues', note:generalNote, done:true, allClear:true, assignedTo:[] });
     } else {
       selected.forEach(([,v]) => {
         db.issues.push({ id:`${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`,
           room:selectedRoom, area:selectedArea, trade, inspector, timestamp,
           cat:v.cat, item:v.item, note:v.note, done:false, allClear:false,
-          assignedTo:[], completionNote:'' });
+          assignedTo:[], completionNote:'', generalNote });
       });
     }
     db.lastUpdated = timestamp;
@@ -727,9 +722,14 @@ function renderDashboard() {
         <div class="issue-row-info">
           <div class="issue-row-item">${issue.cat} — ${issue.item}</div>
           ${issue.note?`<div class="issue-row-note">${issue.note}</div>`:''}
-          ${issue.completionNote?`<div class="issue-row-note" style="color:var(--green-text)">✓ ${issue.completionNote}</div>`:''}
           <div class="issue-row-meta">${issue.trade} · ${issue.inspector} · ${issue.timestamp}</div>
           ${assigned.length?`<div class="issue-row-assigned">👤 ${assigned.join(', ')}</div>`:''}
+          <div id="comp-note-area-${issue.id}" style="display:none;margin-top:6px">
+            <textarea id="comp-note-${issue.id}" rows="2" placeholder="Add completion note…"
+              style="width:100%;padding:8px 10px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:none;"
+              oninput="saveCompNote('${issue.id}',this.value)">${issue.completionNote||''}</textarea>
+          </div>
+          ${issue.completionNote?`<div class="issue-row-note" style="color:var(--green-text);margin-top:4px">✓ ${issue.completionNote}</div>`:''}
         </div>
         <div class="issue-actions">
           <div class="assign-dropdown" id="menu-container-${issue.id}">
@@ -738,9 +738,11 @@ function renderDashboard() {
             </button>
             <div class="assign-menu" id="menu-${issue.id}">${menuItems}</div>
           </div>
+          <button style="font-size:11px;padding:5px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--text2)"
+            onclick="event.stopPropagation();toggleCompNote('${issue.id}')">✏ Note</button>
           <button class="done-btn ${issue.done?'completed':''}" 
             style="position:relative;z-index:9999;pointer-events:all;"
-            onclick="event.stopPropagation();openDoneModal('${issue.id}')">
+            onclick="event.stopPropagation();toggleDone('${issue.id}','')">
             ${issue.done?'✓ Done':'Mark done'}
           </button>
         </div>`;
@@ -789,25 +791,26 @@ async function toggleAssign(issueId, person, el) {
 }
 
 // ── Done modal ─────────────────────────────────────────────────────────────
-function openDoneModal(id) {
-  const issue = db.issues.find(i=>i.id===id);
-  if(issue?.done) { toggleDone(id, ''); return; }
-  pendingDoneId = id;
-  document.getElementById('done-note').value = '';
-  document.getElementById('done-modal').classList.add('visible');
-  console.log('Opening done modal for:', id, 'pendingDoneId set to:', pendingDoneId);
+function toggleCompNote(id) {
+  const area = document.getElementById(`comp-note-area-${id}`);
+  if(area) {
+    const visible = area.style.display !== 'none';
+    area.style.display = visible ? 'none' : 'block';
+    if(!visible) document.getElementById(`comp-note-${id}`)?.focus();
+  }
 }
-function closeDoneModal(){
-  document.getElementById('done-modal').classList.remove('visible');
-  pendingDoneId = null;
-}
-async function confirmDone(){
-  const id = pendingDoneId;
-  const note = document.getElementById('done-note').value.trim();
-  console.log('confirmDone called, id:', id, 'note:', note);
-  if(!id){ alert('Error: no issue selected'); return; }
-  closeDoneModal();
-  await toggleDone(id, note);
+
+async function saveCompNote(id, note) {
+  // Debounce - save after typing stops
+  clearTimeout(window._compNoteTimer);
+  window._compNoteTimer = setTimeout(async () => {
+    try {
+      await loadDB();
+      const issue = db.issues.find(i=>i.id===id);
+      if(issue) issue.completionNote = note;
+      await saveDB();
+    } catch(e) { console.error('Failed to save note:', e); }
+  }, 1000);
 }
 async function toggleDone(id, note) {
   console.log('toggleDone called with id:', id);
