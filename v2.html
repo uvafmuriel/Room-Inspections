@@ -156,13 +156,13 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 </div>
 
 <!-- Completion note modal -->
-<div class="modal-overlay" id="done-modal">
+<div class="modal-overlay" id="done-modal" onclick="if(event.target===this)closeDoneModal()">
   <div class="modal">
     <h3>Mark as Done</h3>
     <textarea id="done-note" rows="3" placeholder="Optional: add a completion note…"></textarea>
     <div class="modal-btns">
       <button class="modal-btn outline" onclick="closeDoneModal()">Cancel</button>
-      <button class="modal-btn primary" onclick="confirmDone()">Mark Done ✓</button>
+      <button class="modal-btn primary" id="confirm-done-btn" onclick="confirmDone()">Mark Done ✓</button>
     </div>
   </div>
 </div>
@@ -560,7 +560,7 @@ async function submitIssues() {
         inspector, timestamp, cat:'General', item:'No issues', note:'', done:true, allClear:true, assignedTo:[] });
     } else {
       selected.forEach(([,v]) => {
-        db.issues.push({ id:`${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        db.issues.push({ id:`${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`,
           room:selectedRoom, area:selectedArea, trade, inspector, timestamp,
           cat:v.cat, item:v.item, note:v.note, done:false, allClear:false,
           assignedTo:[], completionNote:'' });
@@ -740,27 +740,41 @@ async function toggleAssign(issueId, person, el) {
 // ── Done modal ─────────────────────────────────────────────────────────────
 function openDoneModal(id) {
   const issue = db.issues.find(i=>i.id===id);
-  if(issue?.done) { toggleDone(id, ''); return; } // untoggle if already done
+  if(issue?.done) { toggleDone(id, ''); return; }
   pendingDoneId = id;
   document.getElementById('done-note').value = '';
   document.getElementById('done-modal').classList.add('visible');
+  console.log('Opening done modal for:', id, 'pendingDoneId set to:', pendingDoneId);
 }
-function closeDoneModal(){ document.getElementById('done-modal').classList.remove('visible'); pendingDoneId=null; }
+function closeDoneModal(){
+  document.getElementById('done-modal').classList.remove('visible');
+  pendingDoneId = null;
+}
 async function confirmDone(){
+  const id = pendingDoneId;
   const note = document.getElementById('done-note').value.trim();
+  console.log('confirmDone called, id:', id, 'note:', note);
+  if(!id){ alert('Error: no issue selected'); return; }
   closeDoneModal();
-  await toggleDone(pendingDoneId, note);
+  await toggleDone(id, note);
 }
 async function toggleDone(id, note) {
+  console.log('toggleDone called with id:', id);
   showSpinner('Updating...');
   try {
     await loadDB();
     const issue = db.issues.find(i=>i.id===id);
-    if(issue){ issue.done = !issue.done; if(note) issue.completionNote = note; }
+    console.log('Found issue:', issue);
+    if(issue){
+      issue.done = !issue.done;
+      if(note) issue.completionNote = note;
+      if(!issue.done) issue.completionNote = '';
+    }
     await saveDB();
     hideSpinner();
+    buildAssigneeFilter();
     renderDashboard();
-  } catch(e){ hideSpinner(); alert('Failed: '+e.message); }
+  } catch(e){ hideSpinner(); console.error('toggleDone failed:', e); alert('Failed: '+e.message); }
 }
 
 // ── Send assignments ───────────────────────────────────────────────────────
