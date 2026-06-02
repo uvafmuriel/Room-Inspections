@@ -689,7 +689,9 @@ function renderDashboard() {
             </button>
             <div class="assign-menu" id="menu-${issue.id}">${menuItems}</div>
           </div>
-          <button class="done-btn ${issue.done?'completed':''}" onclick="openDoneModal('${issue.id}')">
+          <button class="done-btn ${issue.done?'completed':''}" 
+            style="position:relative;z-index:9999;pointer-events:all;"
+            onclick="event.stopPropagation();openDoneModal('${issue.id}')">
             ${issue.done?'✓ Done':'Mark done'}
           </button>
         </div>`;
