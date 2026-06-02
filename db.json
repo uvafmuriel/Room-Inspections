@@ -42,7 +42,9 @@
       "note": "",
       "done": false,
       "allClear": false,
-      "assignedTo": [],
+      "assignedTo": [
+        "Lex"
+      ],
       "assignedTrade": "Carpentry"
     },
     {
