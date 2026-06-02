@@ -242,6 +242,10 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
       <div class="stat-box"><div class="num" id="stat-done" style="color:var(--green)">0</div><div class="lbl">Done</div></div>
     </div>
     <div class="dashboard-actions">
+      <label style="display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:13px;font-weight:500;color:var(--text2)">
+        <input type="checkbox" id="select-all-cb" onchange="toggleSelectAll(this)" style="width:16px;height:16px;accent-color:var(--blue);cursor:pointer">
+        Select all
+      </label>
       <button class="dash-action-btn" onclick="sendAssignments()">✉ Send Assignments</button>
       <button class="dash-action-btn accent" onclick="exportExcel()">⬇ Export Excel</button>
     </div>
@@ -830,6 +834,11 @@ let selectedIssueIds = new Set();
 function updateBulkSelection() {
   document.querySelectorAll('.bulk-checkbox:checked').forEach(cb => selectedIssueIds.add(cb.dataset.id));
   document.querySelectorAll('.bulk-checkbox:not(:checked)').forEach(cb => selectedIssueIds.delete(cb.dataset.id));
+  // Sync select-all checkbox
+  const all = document.querySelectorAll('.bulk-checkbox');
+  const checked = document.querySelectorAll('.bulk-checkbox:checked');
+  const saCb = document.getElementById('select-all-cb');
+  if(saCb) saCb.checked = all.length > 0 && checked.length === all.length;
   const count = selectedIssueIds.size;
   const bar = document.getElementById('bulk-bar');
   document.getElementById('bulk-count').textContent = count + ' selected';
@@ -850,6 +859,20 @@ function clearSelection() {
   selectedIssueIds.clear();
   document.querySelectorAll('.bulk-checkbox').forEach(cb => cb.checked = false);
   document.getElementById('bulk-bar').style.display = 'none';
+  const saCb = document.getElementById('select-all-cb');
+  if(saCb) saCb.checked = false;
+}
+
+function toggleSelectAll(cb) {
+  const checkboxes = document.querySelectorAll('.bulk-checkbox');
+  checkboxes.forEach(box => {
+    box.checked = cb.checked;
+    if(cb.checked) selectedIssueIds.add(box.dataset.id);
+    else selectedIssueIds.delete(box.dataset.id);
+  });
+  updateBulkSelection();
+  // keep select-all checkbox in sync
+  if(!cb.checked) document.getElementById('bulk-bar').style.display = 'none';
 }
 
 async function bulkAssign() {
