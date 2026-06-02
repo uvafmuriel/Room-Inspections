@@ -375,6 +375,11 @@ async function loadDB() {
   const data = await resp.json();
   dbSha = data.sha;
   db = JSON.parse(atob(data.content.replace(/\n/g,'')));
+  // Normalize assignedTo to always be an array
+  db.issues.forEach(i => {
+    if(!i.assignedTo) i.assignedTo = [];
+    else if(typeof i.assignedTo === 'string') i.assignedTo = i.assignedTo ? [i.assignedTo] : [];
+  });
   return db;
 }
 
