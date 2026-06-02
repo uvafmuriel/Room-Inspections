@@ -97,7 +97,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .issue-group-badge.done{background:var(--green-light);color:var(--green-text)}
 .issue-group-body{display:none;border-top:1px solid var(--border)}
 .issue-group-body.open{display:block}
-.issue-row{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start}
+.issue-row{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start;overflow:visible;position:relative}
 .issue-row:last-child{border-bottom:none}
 .issue-row.done-row{background:var(--green-light)}
 .issue-row-info{flex:1;min-width:0}
@@ -105,12 +105,12 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .issue-row-note{font-size:12px;color:var(--text2);margin-top:2px}
 .issue-row-meta{font-size:11px;color:var(--text3);margin-top:3px}
 .issue-row-assigned{font-size:11px;color:var(--blue-text);margin-top:2px;font-weight:500}
-.issue-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0}
+.issue-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;position:relative;z-index:10}
 /* Multi-select assign */
-.assign-dropdown{position:relative}
+.assign-dropdown{position:relative;z-index:9999}
 .assign-btn{font-size:11px;padding:5px 10px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text2);cursor:pointer;white-space:nowrap}
 .assign-btn.has-assigns{background:var(--blue-light);border-color:var(--blue);color:var(--blue-text)}
-.assign-menu{position:fixed;right:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);box-shadow:0 4px 24px rgba(0,0,0,.2);z-index:500;min-width:180px;display:none;max-height:280px;overflow-y:auto}
+.assign-menu{position:absolute;right:0;top:auto;bottom:100%;margin-bottom:4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);box-shadow:0 4px 24px rgba(0,0,0,.25);z-index:9999;min-width:180px;display:none;max-height:240px;overflow-y:auto}
 .assign-menu.open{display:block}
 .assign-menu-item{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)}
 .assign-menu-item:last-child{border-bottom:none}
@@ -710,10 +710,6 @@ function toggleMenu(id, event) {
   const isOpen = menu.classList.contains('open');
   closeAllMenus();
   if(!isOpen) {
-    const btn = document.querySelector(`#menu-container-${id} .assign-btn`);
-    const rect = btn.getBoundingClientRect();
-    menu.style.top = (rect.bottom + window.scrollY + 4) + 'px';
-    menu.style.right = (window.innerWidth - rect.right) + 'px';
     menu.classList.add('open');
     openMenuId = id;
   }
