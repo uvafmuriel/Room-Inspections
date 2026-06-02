@@ -914,27 +914,25 @@ async function bulkDone() {
 }
 
 function sendAssignments() {
-  const open = db.issues.filter(i=>!i.done&&!i.allClear&&i.assignedTo?.length>0);
-  if(open.length===0){ alert('No assigned issues to send.'); return; }
-  const byPerson = {};
-  open.forEach(i => (i.assignedTo||[]).forEach(p => {
-    if(!byPerson[p]) byPerson[p]=[];
-    byPerson[p].push(i);
-  }));
-  Object.entries(byPerson).forEach(([person, issues]) => {
-    let body = `Hi ${person},\n\nYour open assignments for Lawn & Range:\n\n`;
-    const byRoom = {};
-    issues.forEach(i => { const k=`${i.area} Room ${i.room}`; if(!byRoom[k]) byRoom[k]=[]; byRoom[k].push(i); });
-    Object.entries(byRoom).sort().forEach(([room, roomIssues]) => {
-      body += `${room}:\n`;
-      roomIssues.forEach(i => { body += `  - ${i.cat} — ${i.item}`; if(i.note) body += `: ${i.note}`; body += '\n'; });
-      body += '\n';
-    });
-    body += 'Please mark items as done in the app when complete.\n\nThank you,\nUVA Facilities Management';
-    const email = INSPECTOR_EMAILS[person]||'gre4se@virginia.edu';
-    const subject = `Lawn & Range — Your Assignments (${issues.length} items)`;
-    window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+  const person = filters.assignee;
+  if(person === 'all' || person === 'unassigned') {
+    alert('Please filter by a specific assignee first, then click Send Assignments.');
+    return;
+  }
+  const open = db.issues.filter(i => !i.done && !i.allClear && (i.assignedTo||[]).includes(person));
+  if(open.length === 0) { alert(`No open assignments for ${person}.`); return; }
+  let body = `Hi ${person},\n\nHere are your open assignments for Lawn & Range:\n\n`;
+  const byRoom = {};
+  open.forEach(i => { const k=`${i.area} — Room ${i.room}`; if(!byRoom[k]) byRoom[k]=[]; byRoom[k].push(i); });
+  Object.entries(byRoom).sort().forEach(([room, roomIssues]) => {
+    body += `${room}:\n`;
+    roomIssues.forEach(i => { body += `  - ${i.cat} — ${i.item}`; if(i.note) body += `: ${i.note}`; body += '\n'; });
+    body += '\n';
   });
+  body += 'Please mark items as done in the app when complete.\n\nThank you,\nUVA Facilities Management';
+  const email = INSPECTOR_EMAILS[person] || 'gre4se@virginia.edu';
+  const subject = `Lawn & Range — Your Assignments (${open.length} item${open.length>1?'s':''})`;
+  window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 // ── Export Excel ───────────────────────────────────────────────────────────
