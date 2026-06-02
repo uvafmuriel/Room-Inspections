@@ -938,7 +938,6 @@ function sendAssignments() {
 // ── Export Excel ───────────────────────────────────────────────────────────
 function exportExcel() {
   const issues = db.issues.filter(i=>!i.allClear);
-  let csv = 'Area,Room,Trade,Category,Issue,Notes,Inspector,Date,Assigned To,Status,Completion Note\n';
   const areaOrder = ['West Lawn','West Range','East Lawn','East Range'];
   const sorted = [...issues].sort((a,b) => {
     const ao = areaOrder.indexOf(a.area)-areaOrder.indexOf(b.area);
@@ -947,19 +946,80 @@ function exportExcel() {
     if(ar!==br) return ar-br;
     return a.trade.localeCompare(b.trade);
   });
+
+  // Parse timestamp into date and time parts
+  function parseTS(ts) {
+    if(!ts) return {date:'',time:''};
+    const parts = ts.split(', ');
+    if(parts.length >= 2) return { date: parts[0], time: parts.slice(1).join(', ') };
+    return { date: ts, time: '' };
+  }
+
+  // Build HTML with a proper table for Excel
+  let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="UTF-8">
+<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>
+<x:Name>Inspections</x:Name>
+<x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions>
+</x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+<style>
+  table { border-collapse: collapse; width: 100%; }
+  th { background: #1A1A18; color: white; font-family: Arial; font-size: 11pt; padding: 6px 10px; border: 1px solid #ccc; text-align: left; }
+  td { font-family: Arial; font-size: 10pt; padding: 5px 10px; border: 1px solid #ddd; vertical-align: top; }
+  tr:nth-child(even) td { background: #F5F3EE; }
+  .done td { background: #E6F2E8; }
+  .open td { background: #FFFFFF; }
+  .wo td { background: #FAEAE3; }
+</style>
+</head><body>
+<h2 style="font-family:Arial;color:#1A1A18;">Lawn &amp; Range — Room Inspection Issues</h2>
+<p style="font-family:Arial;font-size:10pt;color:#5A5A55;">Exported: ${new Date().toLocaleString()}</p>
+<table>
+<thead><tr>
+  <th>Area</th>
+  <th>Room</th>
+  <th>Trade</th>
+  <th>Category</th>
+  <th>Issue</th>
+  <th>Notes</th>
+  <th>Inspector</th>
+  <th>Date</th>
+  <th>Time</th>
+  <th>Assigned To</th>
+  <th>Status</th>
+  <th>Completion Note</th>
+</tr></thead>
+<tbody>`;
+
   sorted.forEach(i => {
-    csv += [
-      i.area, i.room, i.trade, i.cat, i.item,
-      '"'+(i.note||'').replace(/"/g,'""')+'"',
-      i.inspector, i.timestamp,
-      '"'+(i.assignedTo||[]).join(', ').replace(/"/g,'""')+'"',
-      i.done?'Done':'Open',
-      '"'+(i.completionNote||'').replace(/"/g,'""')+'"'
-    ].join(',') + '\n';
+    const {date, time} = parseTS(i.timestamp);
+    const assigned = (i.assignedTo||[]).join(', ');
+    const status = i.done ? 'Done' : 'Open';
+    const rowClass = i.done ? 'done' : 'open';
+    const note = (i.note||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const compNote = (i.completionNote||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    html += `<tr class="${rowClass}">
+      <td>${i.area}</td>
+      <td>${i.room}</td>
+      <td>${i.trade}</td>
+      <td>${i.cat}</td>
+      <td>${i.item}</td>
+      <td>${note}</td>
+      <td>${i.inspector}</td>
+      <td>${date}</td>
+      <td>${time}</td>
+      <td>${assigned}</td>
+      <td>${status}</td>
+      <td>${compNote}</td>
+    </tr>`;
   });
+
+  html += '</tbody></table></body></html>';
+
+  const blob = new Blob([html], {type:'application/vnd.ms-excel;charset=utf-8'});
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-  a.download = `LawnRange_Inspections_${new Date().toLocaleDateString('en-US').replace(/\//g,'-')}.csv`;
+  a.href = URL.createObjectURL(blob);
+  a.download = `LawnRange_Inspections_${new Date().toLocaleDateString('en-US').replace(/\//g,'-')}.xls`;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
