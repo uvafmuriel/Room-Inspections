@@ -144,7 +144,9 @@
       "note": "",
       "done": false,
       "allClear": false,
-      "assignedTo": [],
+      "assignedTo": [
+        "Mike"
+      ],
       "completionNote": ""
     },
     {
@@ -159,7 +161,9 @@
       "note": "",
       "done": false,
       "allClear": false,
-      "assignedTo": [],
+      "assignedTo": [
+        "Mike"
+      ],
       "completionNote": ""
     },
     {
@@ -174,7 +178,9 @@
       "note": "",
       "done": false,
       "allClear": false,
-      "assignedTo": [],
+      "assignedTo": [
+        "Mike"
+      ],
       "completionNote": ""
     },
     {
