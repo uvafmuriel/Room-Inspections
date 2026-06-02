@@ -300,8 +300,38 @@
         "Anthony"
       ],
       "completionNote": ""
+    },
+    {
+      "id": "1780422324526-4jfq5nirf39-ytdk2zpvwk",
+      "room": "35",
+      "area": "West Lawn",
+      "trade": "Electrical",
+      "inspector": "Morgan",
+      "timestamp": "6/2/2026, 1:45 PM",
+      "cat": "Appliances",
+      "item": "Refrigerator issue",
+      "note": "",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": ""
+    },
+    {
+      "id": "1780422324526-9w1ljzgrs2k-7qqgtdd80zv",
+      "room": "35",
+      "area": "West Lawn",
+      "trade": "Electrical",
+      "inspector": "Morgan",
+      "timestamp": "6/2/2026, 1:45 PM",
+      "cat": "Safety",
+      "item": "Extinguisher tag expired",
+      "note": "",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": ""
     }
   ],
   "assignments": [],
-  "lastUpdated": "6/2/2026, 1:42 PM"
+  "lastUpdated": "6/2/2026, 1:45 PM"
 }
