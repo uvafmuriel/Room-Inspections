@@ -14,6 +14,21 @@
       "allClear": true,
       "assignedTo": "",
       "assignedTrade": "Carpentry"
+    },
+    {
+      "id": "1780418607884-nsce13u6cjf",
+      "room": "10",
+      "area": "East Lawn",
+      "trade": "Carpentry",
+      "inspector": "John",
+      "timestamp": "6/2/2026, 12:43 PM",
+      "cat": "Paint & Plaster",
+      "item": "Plaster repair",
+      "note": "blah blah blah\n",
+      "done": false,
+      "allClear": false,
+      "assignedTo": "",
+      "assignedTrade": "Carpentry"
     }
   ],
   "assignments": [],
