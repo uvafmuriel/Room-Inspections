@@ -33,23 +33,6 @@
       "assignedTrade": "Carpentry"
     },
     {
-      "id": "1780419354273-ugtmzz45kqg",
-      "room": "1",
-      "area": "West Lawn",
-      "trade": "Carpentry",
-      "inspector": "Lex",
-      "timestamp": "6/2/2026, 12:55 PM",
-      "cat": "Windows & Blinds",
-      "item": "Broken window pane",
-      "note": "aseefefe",
-      "done": true,
-      "allClear": false,
-      "assignedTo": [
-        "Josh"
-      ],
-      "assignedTrade": "Carpentry"
-    },
-    {
       "id": "1780419354273-cx6gcy1fpdt",
       "room": "1",
       "area": "West Lawn",
