@@ -134,6 +134,21 @@
       "allClear": false,
       "assignedTo": [],
       "completionNote": ""
+    },
+    {
+      "id": "1780420494675-cfnjx4tpeyf",
+      "room": "5",
+      "area": "West Lawn",
+      "trade": "Carpentry",
+      "inspector": "Jon",
+      "timestamp": "6/2/2026, 1:14 PM",
+      "cat": "Paint & Plaster",
+      "item": "Touch up paint",
+      "note": "",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": ""
     }
   ],
   "assignments": [],
