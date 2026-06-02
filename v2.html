@@ -149,34 +149,40 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
     <div class="wrap">
       <div class="field-group">
         <label>Your name</label>
-        <select id="sel-inspector">
-          <option value="">Select inspector…</option>
+        <select id="sel-inspector" onchange="autoSetTrade(this)">
+          <option value="">Select your name…</option>
           <optgroup label="Carpentry">
-            <option>Mike</option><option>Bryan</option><option>John</option><option>Lex</option>
-            <option>Josh</option><option>Corey Walker</option>
+            <option data-trade="Carpentry">Bryan</option>
+            <option data-trade="Carpentry">Mike</option>
+            <option data-trade="Carpentry">Jon</option>
+            <option data-trade="Carpentry">Lex</option>
+            <option data-trade="Carpentry">Josh</option>
+            <option data-trade="Carpentry">Corey Walker</option>
           </optgroup>
           <optgroup label="Electrical">
-            <option>Morgan</option><option>Brittany</option><option>Anthony</option>
-            <option>Jalisa</option><option>Richard</option>
+            <option data-trade="Electrical">Morgan</option>
+            <option data-trade="Electrical">Brittany</option>
+            <option data-trade="Electrical">Anthony</option>
+            <option data-trade="Electrical">Jalisa</option>
+            <option data-trade="Electrical">Richard</option>
           </optgroup>
           <optgroup label="Plumbing">
-            <option>Cris</option><option>Codey</option><option>Tim</option>
-            <option>Duane</option><option>Leo</option>
+            <option data-trade="Plumbing">Tim</option>
+            <option data-trade="Plumbing">Cris</option>
+            <option data-trade="Plumbing">Cody</option>
+            <option data-trade="Plumbing">Duane</option>
+            <option data-trade="Plumbing">Leo</option>
           </optgroup>
           <optgroup label="HVAC">
-            <option>Jason</option><option>Wayne</option>
+            <option data-trade="HVAC">Jason</option>
+            <option data-trade="HVAC">Wayne</option>
           </optgroup>
         </select>
       </div>
-      <div class="field-group">
+      <div class="field-group" id="trade-display" style="display:none">
         <label>Trade</label>
-        <select id="sel-trade" onchange="filterCategories()">
-          <option value="">Select trade…</option>
-          <option value="Carpentry">Carpentry</option>
-          <option value="Electrical">Electrical</option>
-          <option value="Plumbing">Plumbing</option>
-          <option value="HVAC">HVAC</option>
-        </select>
+        <div id="trade-label" style="padding:13px;background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:15px;font-weight:600;color:var(--text)"></div>
+        <input type="hidden" id="sel-trade" value="" />
       </div>
       <div class="field-group">
         <label>Select room</label>
@@ -275,6 +281,28 @@ const SUPERVISORS = {
   HVAC: [{ name:'Wayne', email:'mfc5xv@virginia.edu' }],
 };
 
+const INSPECTOR_EMAILS = {
+  'Bryan': 'bmf5p@virginia.edu',
+  'Mike': 'nky2hc@virginia.edu',
+  'Jon': 'zap8gp@virginia.edu',
+  'Lex': 'vef2hw@virginia.edu',
+  'Josh': 'eua3fk@virginia.edu',
+  'Corey Walker': 'jtb4vt@virginia.edu',
+  'Morgan': 'mtg8t@virginia.edu',
+  'Richard': 'rcw7j@virginia.edu',
+  'Brittany': 'bnc3te@virginia.edu',
+  'Anthony': 'yup8bc@virginia.edu',
+  'Jalisa': 'jls3pc@virginia.edu',
+  'Tim': 'tjs8jp@virginia.edu',
+  'Cris': 'dpd7pu@virginia.edu',
+  'Cody': 'dke9ra@virginia.edu',
+  'Duane': 'dad2j@virginia.edu',
+  'Leo': 'hqc2zk@virginia.edu',
+  'Jason': 'jpm4mz@virginia.edu',
+  'Wayne': 'mfc5xv@virginia.edu',
+  'Benji': 'brb6u@virginia.edu',
+};
+
 let db = { issues: [], assignments: [], lastUpdated: '' };
 let dbSha = '';
 let activeCat = 0;
@@ -352,6 +380,20 @@ function buildRoomChips(ci) {
 }
 
 function filterCategories() {}
+
+function autoSetTrade(sel) {
+  const opt = sel.options[sel.selectedIndex];
+  const trade = opt.getAttribute('data-trade') || '';
+  document.getElementById('sel-trade').value = trade;
+  const display = document.getElementById('trade-display');
+  const label = document.getElementById('trade-label');
+  if(trade) {
+    label.textContent = trade;
+    display.style.display = 'block';
+  } else {
+    display.style.display = 'none';
+  }
+}
 
 function startInspection() {
   const inspector = document.getElementById('sel-inspector').value;
