@@ -106,7 +106,7 @@
       "cat": "Furniture",
       "item": "Desk repair",
       "note": "",
-      "done": false,
+      "done": true,
       "allClear": false,
       "assignedTo": [
         "Josh"
