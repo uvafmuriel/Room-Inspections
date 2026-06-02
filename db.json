@@ -16,23 +16,6 @@
       "assignedTrade": "Carpentry"
     },
     {
-      "id": "1780418905235-pj4yh3i1fq",
-      "room": "11",
-      "area": "West Lawn",
-      "trade": "Carpentry",
-      "inspector": "Bryan",
-      "timestamp": "6/2/2026, 12:48 PM",
-      "cat": "Paint & Plaster",
-      "item": "Bubbling/scaling plaster",
-      "note": "",
-      "done": false,
-      "allClear": false,
-      "assignedTo": [
-        "Lex"
-      ],
-      "assignedTrade": "Carpentry"
-    },
-    {
       "id": "1780420476841-9gsorkwn7uq",
       "room": "3",
       "area": "West Lawn",
