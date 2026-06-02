@@ -550,11 +550,11 @@ function renderDashboard() {
     const group = document.createElement('div');
     group.className = 'issue-group';
     group.innerHTML = `
-      <div class="issue-group-header" onclick="this.nextSibling.classList.toggle('open')">
+      <div class="issue-group-header" onclick="this.parentElement.querySelector('.issue-group-body').classList.toggle('open')">
         <span class="issue-group-title">${groupKey}</span>
         <span class="issue-group-badge ${open===0?'done':''}">${open===0?'Done':open+' open'}</span>
       </div>
-      <div class="issue-group-body"></div>`;
+      <div class="issue-group-body open"></div>`;
     const body = group.querySelector('.issue-group-body');
 
     groupIssues.forEach(issue => {
