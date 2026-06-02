@@ -16,23 +16,6 @@
       "assignedTrade": "Carpentry"
     },
     {
-      "id": "1780421244330-tl3ym3zt22-onkdyhmqava",
-      "room": "7",
-      "area": "West Lawn",
-      "trade": "Carpentry",
-      "inspector": "Mike",
-      "timestamp": "6/2/2026, 1:27 PM",
-      "cat": "Paint & Plaster",
-      "item": "Windowsill/mantle paint",
-      "note": "",
-      "done": false,
-      "allClear": false,
-      "assignedTo": [
-        "Mike"
-      ],
-      "completionNote": ""
-    },
-    {
       "id": "1780421244330-nitk278ud5j-7w2f6gmgnpn",
       "room": "7",
       "area": "West Lawn",
