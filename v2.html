@@ -90,7 +90,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .filter-pills{display:flex;gap:6px;flex-wrap:wrap}
 .filter-pill{padding:5px 12px;border-radius:99px;border:1.5px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;white-space:nowrap}
 .filter-pill.active{background:#1a1a18;border-color:#1a1a18;color:#f5f3ee}
-.issue-group{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+.issue-group{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;}
 .issue-group-header{background:var(--surface2);padding:10px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
 .issue-group-title{flex:1;font-size:14px;font-weight:600}
 .issue-group-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--accent-light);color:var(--accent-text)}
@@ -110,7 +110,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .assign-dropdown{position:relative}
 .assign-btn{font-size:11px;padding:5px 10px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text2);cursor:pointer;white-space:nowrap}
 .assign-btn.has-assigns{background:var(--blue-light);border-color:var(--blue);color:var(--blue-text)}
-.assign-menu{position:absolute;right:0;top:100%;margin-top:4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:50;min-width:160px;display:none}
+.assign-menu{position:fixed;right:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);box-shadow:0 4px 24px rgba(0,0,0,.2);z-index:500;min-width:180px;display:none;max-height:280px;overflow-y:auto}
 .assign-menu.open{display:block}
 .assign-menu-item{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)}
 .assign-menu-item:last-child{border-bottom:none}
@@ -613,7 +613,7 @@ function getFilteredIssues() {
     if(i.allClear) return false;
     if(filters.trade!=='all' && i.trade!==filters.trade) return false;
     if(filters.area!=='all' && i.area!==filters.area) return false;
-    if(filters.cat!=='all' && i.cat!==filters.cat) return false;
+    if(filters.cat!=='all' && !i.cat.includes(filters.cat) && filters.cat!==i.cat) return false;
     if(filters.status==='open' && i.done) return false;
     if(filters.status==='done' && !i.done) return false;
     if(filters.assignee==='unassigned' && i.assignedTo?.length>0) return false;
@@ -623,7 +623,9 @@ function getFilteredIssues() {
 }
 
 function renderDashboard() {
+  console.log('All issues in DB:', db.issues.length, db.issues);
   const filtered = getFilteredIssues();
+  console.log('Filtered issues:', filtered.length, 'filters:', JSON.stringify(filters));
   const allIssues = db.issues.filter(i=>!i.allClear);
   document.getElementById('stat-total').textContent = allIssues.length;
   document.getElementById('stat-open').textContent = allIssues.filter(i=>!i.done).length;
@@ -677,7 +679,7 @@ function renderDashboard() {
         </div>
         <div class="issue-actions">
           <div class="assign-dropdown" id="menu-container-${issue.id}">
-            <button class="assign-btn ${assigned.length?'has-assigns':''}" onclick="toggleMenu('${issue.id}')">
+            <button class="assign-btn ${assigned.length?'has-assigns':''}" onclick="toggleMenu('${issue.id}', event)">
               ${assigned.length?'Assigned ('+assigned.length+')':'Assign…'}
             </button>
             <div class="assign-menu" id="menu-${issue.id}">${menuItems}</div>
@@ -697,11 +699,19 @@ function renderDashboard() {
   };
 }
 
-function toggleMenu(id) {
+function toggleMenu(id, event) {
+  event && event.stopPropagation();
   const menu = document.getElementById(`menu-${id}`);
   const isOpen = menu.classList.contains('open');
   closeAllMenus();
-  if(!isOpen) { menu.classList.add('open'); openMenuId = id; }
+  if(!isOpen) {
+    const btn = document.querySelector(`#menu-container-${id} .assign-btn`);
+    const rect = btn.getBoundingClientRect();
+    menu.style.top = (rect.bottom + window.scrollY + 4) + 'px';
+    menu.style.right = (window.innerWidth - rect.right) + 'px';
+    menu.classList.add('open');
+    openMenuId = id;
+  }
 }
 
 function closeAllMenus() {
