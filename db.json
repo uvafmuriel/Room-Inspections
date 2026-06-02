@@ -16,21 +16,6 @@
       "assignedTrade": "Carpentry"
     },
     {
-      "id": "1780421244330-ylvld9hkjk-qw7knres4f",
-      "room": "7",
-      "area": "West Lawn",
-      "trade": "Carpentry",
-      "inspector": "Mike",
-      "timestamp": "6/2/2026, 1:27 PM",
-      "cat": "Windows & Blinds",
-      "item": "Window blocks needed",
-      "note": "",
-      "done": false,
-      "allClear": false,
-      "assignedTo": [],
-      "completionNote": ""
-    },
-    {
       "id": "1780421244331-xzpzf36lbvb-82nc1o4sxhk",
       "room": "7",
       "area": "West Lawn",
