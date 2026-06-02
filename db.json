@@ -40,7 +40,7 @@
       "cat": "Paint & Plaster",
       "item": "Bubbling/scaling plaster",
       "note": "",
-      "done": false,
+      "done": true,
       "allClear": false,
       "assignedTo": "",
       "assignedTrade": "Carpentry"
