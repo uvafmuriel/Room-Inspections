@@ -279,7 +279,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
       </div>
     </div>
 
-    <div class="filter-section">
+    <div class="filter-section" id="filter-assignee-section" style="display:none">
       <div class="filter-label">Assignee</div>
       <div class="filter-pills" id="filter-assignee">
         <button class="filter-pill active" onclick="setFilter('assignee','all',this)">All</button>
@@ -629,19 +629,19 @@ function setFilter(type, val, btn) {
 
 function buildAssigneeFilter() {
   const trade = filters.trade;
+  const section = document.getElementById('filter-assignee-section');
   const bar = document.getElementById('filter-assignee');
-  // Get people relevant to current trade filter
-  let people = [];
+
+  // Hide assignee filter when no specific trade is selected
   if(trade === 'all') {
-    people = Object.values(TRADE_PEOPLE).flat();
-  } else {
-    people = TRADE_PEOPLE[trade] || [];
+    if(section) section.style.display = 'none';
+    return;
   }
-  // Also include anyone already assigned in the data
-  db.issues.forEach(i => (i.assignedTo||[]).forEach(a => {
-    if(!people.includes(a)) people.push(a);
-  }));
-  people = [...new Set(people)];
+  if(section) section.style.display = 'block';
+
+  // Only show people from the selected trade
+  const people = TRADE_PEOPLE[trade] || [];
+
   bar.innerHTML = `
     <button class="filter-pill ${filters.assignee==='all'?'active':''}" onclick="setFilter('assignee','all',this)">All</button>
     <button class="filter-pill ${filters.assignee==='unassigned'?'active':''}" onclick="setFilter('assignee','unassigned',this)">Unassigned</button>`;
