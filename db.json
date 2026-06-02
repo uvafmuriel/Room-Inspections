@@ -174,23 +174,6 @@
       "completionNote": ""
     },
     {
-      "id": "1780422169776-bqc29rndceu-ibnehmn59cm",
-      "room": "11",
-      "area": "West Lawn",
-      "trade": "Electrical",
-      "inspector": "Brittany",
-      "timestamp": "6/2/2026, 1:42 PM",
-      "cat": "Lights",
-      "item": "Lights inside sink enclosure not working",
-      "note": "",
-      "done": false,
-      "allClear": false,
-      "assignedTo": [
-        "Anthony"
-      ],
-      "completionNote": ""
-    },
-    {
       "id": "1780422324526-4jfq5nirf39-ytdk2zpvwk",
       "room": "35",
       "area": "West Lawn",
