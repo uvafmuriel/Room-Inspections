@@ -672,10 +672,12 @@ function renderDashboard() {
   console.log('All issues in DB:', db.issues.length, db.issues);
   const filtered = getFilteredIssues();
   console.log('Filtered issues:', filtered.length, 'filters:', JSON.stringify(filters));
-  const allIssues = db.issues.filter(i=>!i.allClear);
-  document.getElementById('stat-total').textContent = allIssues.length;
-  document.getElementById('stat-open').textContent = allIssues.filter(i=>!i.done).length;
-  document.getElementById('stat-done').textContent = allIssues.filter(i=>i.done).length;
+  // Stats reflect current trade filter
+  const tradeFilter = filters.trade;
+  const statIssues = db.issues.filter(i => !i.allClear && (tradeFilter==='all' || i.trade===tradeFilter));
+  document.getElementById('stat-total').textContent = statIssues.length;
+  document.getElementById('stat-open').textContent = statIssues.filter(i=>!i.done).length;
+  document.getElementById('stat-done').textContent = statIssues.filter(i=>i.done).length;
 
   const list = document.getElementById('dashboard-list');
   list.innerHTML = '';
