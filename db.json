@@ -89,7 +89,7 @@
       "cat": "Windows & Blinds",
       "item": "Broken window pane",
       "note": "aseefefe",
-      "done": false,
+      "done": true,
       "allClear": false,
       "assignedTo": [
         "Josh"
