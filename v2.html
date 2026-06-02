@@ -619,7 +619,7 @@ function setFilter(type, val, btn) {
     } else {
       catSection.style.display = 'block';
       const cats = TRADE_CATS[val] || [];
-      catBar.innerHTML = '<button class="filter-pill active" onclick="setFilter('cat','all',this)">All</button>';
+      catBar.innerHTML = `<button class="filter-pill active" onclick="setFilter('cat','all',this)">All</button>`;
       cats.forEach(cat => {
         const b = document.createElement('button');
         b.className = 'filter-pill';
