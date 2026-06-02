@@ -166,7 +166,7 @@
       "cat": "Safety",
       "item": "Extinguisher tag expired",
       "note": "",
-      "done": false,
+      "done": true,
       "allClear": false,
       "assignedTo": [],
       "completionNote": ""
