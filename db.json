@@ -44,8 +44,68 @@
       "allClear": false,
       "assignedTo": "",
       "assignedTrade": "Carpentry"
+    },
+    {
+      "id": "1780419354273-saxh2frba6",
+      "room": "1",
+      "area": "West Lawn",
+      "trade": "Carpentry",
+      "inspector": "Lex",
+      "timestamp": "6/2/2026, 12:55 PM",
+      "cat": "Paint & Plaster",
+      "item": "Touch up paint",
+      "note": "",
+      "done": false,
+      "allClear": false,
+      "assignedTo": "",
+      "assignedTrade": "Carpentry"
+    },
+    {
+      "id": "1780419354273-gfml8jsg1af",
+      "room": "1",
+      "area": "West Lawn",
+      "trade": "Carpentry",
+      "inspector": "Lex",
+      "timestamp": "6/2/2026, 12:55 PM",
+      "cat": "Doors",
+      "item": "Chain lock missing",
+      "note": "sadfgsdrg",
+      "done": false,
+      "allClear": false,
+      "assignedTo": "",
+      "assignedTrade": "Carpentry"
+    },
+    {
+      "id": "1780419354273-ugtmzz45kqg",
+      "room": "1",
+      "area": "West Lawn",
+      "trade": "Carpentry",
+      "inspector": "Lex",
+      "timestamp": "6/2/2026, 12:55 PM",
+      "cat": "Windows & Blinds",
+      "item": "Broken window pane",
+      "note": "aseefefe",
+      "done": false,
+      "allClear": false,
+      "assignedTo": "",
+      "assignedTrade": "Carpentry"
+    },
+    {
+      "id": "1780419354273-cx6gcy1fpdt",
+      "room": "1",
+      "area": "West Lawn",
+      "trade": "Carpentry",
+      "inspector": "Lex",
+      "timestamp": "6/2/2026, 12:55 PM",
+      "cat": "Furniture",
+      "item": "Desk repair",
+      "note": "",
+      "done": false,
+      "allClear": false,
+      "assignedTo": "",
+      "assignedTrade": "Carpentry"
     }
   ],
   "assignments": [],
-  "lastUpdated": "6/2/2026, 12:48 PM"
+  "lastUpdated": "6/2/2026, 12:55 PM"
 }
