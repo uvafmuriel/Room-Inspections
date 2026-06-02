@@ -745,6 +745,8 @@ function renderDashboard() {
             onclick="event.stopPropagation();toggleDone('${issue.id}','')">
             ${issue.done?'✓ Done':'Mark done'}
           </button>
+          <button style="font-size:11px;padding:5px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--accent-text)"
+            onclick="event.stopPropagation();deleteIssue('${issue.id}')">🗑 Delete</button>
         </div>`;
       body.appendChild(row);
     });
@@ -812,6 +814,18 @@ async function saveCompNote(id, note) {
     } catch(e) { console.error('Failed to save note:', e); }
   }, 1000);
 }
+async function deleteIssue(id) {
+  if(!confirm('Delete this issue? This cannot be undone.')) return;
+  showSpinner('Deleting...');
+  try {
+    await loadDB();
+    db.issues = db.issues.filter(i => i.id !== id);
+    await saveDB();
+    hideSpinner();
+    renderDashboard();
+  } catch(e) { hideSpinner(); alert('Failed: ' + e.message); }
+}
+
 async function toggleDone(id, note) {
   console.log('toggleDone called with id:', id);
   showSpinner('Updating...');
