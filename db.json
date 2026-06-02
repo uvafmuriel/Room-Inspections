@@ -296,7 +296,9 @@
       "note": "",
       "done": false,
       "allClear": false,
-      "assignedTo": [],
+      "assignedTo": [
+        "Anthony"
+      ],
       "completionNote": ""
     }
   ],
