@@ -12,7 +12,7 @@
       "note": "",
       "done": true,
       "allClear": true,
-      "assignedTo": "",
+      "assignedTo": [],
       "assignedTrade": "Carpentry"
     },
     {
@@ -27,7 +27,7 @@
       "note": "blah blah blah\n",
       "done": true,
       "allClear": false,
-      "assignedTo": "",
+      "assignedTo": [],
       "assignedTrade": "Carpentry"
     },
     {
@@ -42,7 +42,7 @@
       "note": "",
       "done": false,
       "allClear": false,
-      "assignedTo": "",
+      "assignedTo": [],
       "assignedTrade": "Carpentry"
     },
     {
@@ -57,7 +57,9 @@
       "note": "",
       "done": false,
       "allClear": false,
-      "assignedTo": "Josh",
+      "assignedTo": [
+        "Josh"
+      ],
       "assignedTrade": "Carpentry"
     },
     {
@@ -72,7 +74,9 @@
       "note": "sadfgsdrg",
       "done": false,
       "allClear": false,
-      "assignedTo": "Josh",
+      "assignedTo": [
+        "Josh"
+      ],
       "assignedTrade": "Carpentry"
     },
     {
@@ -87,7 +91,9 @@
       "note": "aseefefe",
       "done": false,
       "allClear": false,
-      "assignedTo": "Josh",
+      "assignedTo": [
+        "Josh"
+      ],
       "assignedTrade": "Carpentry"
     },
     {
@@ -102,7 +108,9 @@
       "note": "",
       "done": false,
       "allClear": false,
-      "assignedTo": "Josh",
+      "assignedTo": [
+        "Josh"
+      ],
       "assignedTrade": "Carpentry"
     },
     {
@@ -117,7 +125,9 @@
       "note": "",
       "done": false,
       "allClear": false,
-      "assignedTo": "Josh",
+      "assignedTo": [
+        "Josh"
+      ],
       "assignedTrade": "Carpentry"
     },
     {
