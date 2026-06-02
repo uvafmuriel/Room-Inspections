@@ -245,6 +245,15 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
       <button class="dash-action-btn" onclick="sendAssignments()">✉ Send Assignments</button>
       <button class="dash-action-btn accent" onclick="exportExcel()">⬇ Export Excel</button>
     </div>
+    <div id="bulk-bar" style="display:none;background:var(--blue-light);border:1px solid var(--blue);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;display:none;align-items:center;gap:10px;flex-wrap:wrap">
+      <span id="bulk-count" style="font-size:13px;font-weight:600;color:var(--blue-text);flex:1">0 selected</span>
+      <select id="bulk-assign-select" style="padding:6px 10px;border-radius:var(--radius-sm);border:1.5px solid var(--blue);background:white;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer">
+        <option value="">Assign selected to…</option>
+      </select>
+      <button onclick="bulkAssign()" style="padding:7px 14px;background:var(--blue);color:white;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Assign</button>
+      <button onclick="bulkDone()" style="padding:7px 14px;background:var(--green);color:white;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer">Mark all done</button>
+      <button onclick="clearSelection()" style="padding:7px 14px;background:transparent;color:var(--blue-text);border:1.5px solid var(--blue);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer">Clear</button>
+    </div>
     <div class="filter-section">
       <div class="filter-label">Trade</div>
       <div class="filter-pills" id="filter-trade">
@@ -253,6 +262,12 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
         <button class="filter-pill" onclick="setFilter('trade','Electrical',this)">Electrical</button>
         <button class="filter-pill" onclick="setFilter('trade','Plumbing',this)">Plumbing</button>
         <button class="filter-pill" onclick="setFilter('trade','HVAC',this)">HVAC</button>
+      </div>
+    </div>
+    <div class="filter-section" id="filter-cat-section" style="display:none">
+      <div class="filter-label">Category</div>
+      <div class="filter-pills" id="filter-cat">
+        <button class="filter-pill active" onclick="setFilter('cat','all',this)">All</button>
       </div>
     </div>
     <div class="filter-section">
@@ -265,18 +280,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
         <button class="filter-pill" onclick="setFilter('area','East Range',this)">East Range</button>
       </div>
     </div>
-    <div class="filter-section">
-      <div class="filter-label">Category</div>
-      <div class="filter-pills" id="filter-cat">
-        <button class="filter-pill active" onclick="setFilter('cat','all',this)">All</button>
-        <button class="filter-pill" onclick="setFilter('cat','Paint & Plaster',this)">Paint & Plaster</button>
-        <button class="filter-pill" onclick="setFilter('cat','Doors',this)">Doors</button>
-        <button class="filter-pill" onclick="setFilter('cat','Windows & Blinds',this)">Windows</button>
-        <button class="filter-pill" onclick="setFilter('cat','Furniture',this)">Furniture</button>
-        <button class="filter-pill" onclick="setFilter('cat','Fireplace',this)">Fireplace</button>
-        <button class="filter-pill" onclick="setFilter('cat','Other',this)">Other</button>
-      </div>
-    </div>
+
     <div class="filter-section">
       <div class="filter-label">Assignee</div>
       <div class="filter-pills" id="filter-assignee">
@@ -588,11 +592,37 @@ function showSpinner(msg){ document.getElementById('submit-msg').textContent=msg
 function hideSpinner(){ document.getElementById('submit-overlay').classList.remove('visible'); }
 
 // ── Dashboard ──────────────────────────────────────────────────────────────
+const TRADE_CATS = {
+  Carpentry: ['Paint & Plaster','Doors','Windows & Blinds','Furniture','Fireplace','Other'],
+  Electrical: ['Lights','Appliances','Safety'],
+  Plumbing: ['Water','Fixtures'],
+  HVAC: ['System','Equipment'],
+};
+
 function setFilter(type, val, btn) {
   filters[type] = val;
   const container = btn.closest('.filter-pills') || btn.parentElement;
   container.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
+  if(type === 'trade') {
+    filters.cat = 'all';
+    const catSection = document.getElementById('filter-cat-section');
+    const catBar = document.getElementById('filter-cat');
+    if(val === 'all') {
+      catSection.style.display = 'none';
+    } else {
+      catSection.style.display = 'block';
+      const cats = TRADE_CATS[val] || [];
+      catBar.innerHTML = '<button class="filter-pill active" onclick="setFilter('cat','all',this)">All</button>';
+      cats.forEach(cat => {
+        const b = document.createElement('button');
+        b.className = 'filter-pill';
+        b.textContent = cat;
+        b.onclick = () => setFilter('cat', cat, b);
+        catBar.appendChild(b);
+      });
+    }
+  }
   renderDashboard();
 }
 
@@ -675,6 +705,9 @@ function renderDashboard() {
         </div>`).join('');
 
       row.innerHTML = `
+        <input type="checkbox" class="bulk-checkbox" data-id="${issue.id}" 
+          style="width:16px;height:16px;margin-top:2px;cursor:pointer;flex-shrink:0;accent-color:var(--blue)"
+          onchange="updateBulkSelection()">
         <div class="issue-row-info">
           <div class="issue-row-item">${issue.cat} — ${issue.item}</div>
           ${issue.note?`<div class="issue-row-note">${issue.note}</div>`:''}
@@ -780,6 +813,71 @@ async function toggleDone(id, note) {
 }
 
 // ── Send assignments ───────────────────────────────────────────────────────
+let selectedIssueIds = new Set();
+
+function updateBulkSelection() {
+  document.querySelectorAll('.bulk-checkbox:checked').forEach(cb => selectedIssueIds.add(cb.dataset.id));
+  document.querySelectorAll('.bulk-checkbox:not(:checked)').forEach(cb => selectedIssueIds.delete(cb.dataset.id));
+  const count = selectedIssueIds.size;
+  const bar = document.getElementById('bulk-bar');
+  document.getElementById('bulk-count').textContent = count + ' selected';
+  bar.style.display = count > 0 ? 'flex' : 'none';
+  // Populate bulk assign select based on current trade filter
+  const sel = document.getElementById('bulk-assign-select');
+  const trade = filters.trade !== 'all' ? filters.trade : null;
+  const people = trade ? (TRADE_PEOPLE[trade]||[]) : Object.values(TRADE_PEOPLE).flat();
+  sel.innerHTML = '<option value="">Assign selected to…</option>';
+  [...new Set(people)].forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p; opt.textContent = p;
+    sel.appendChild(opt);
+  });
+}
+
+function clearSelection() {
+  selectedIssueIds.clear();
+  document.querySelectorAll('.bulk-checkbox').forEach(cb => cb.checked = false);
+  document.getElementById('bulk-bar').style.display = 'none';
+}
+
+async function bulkAssign() {
+  const person = document.getElementById('bulk-assign-select').value;
+  if(!person){ alert('Select a person to assign to.'); return; }
+  if(selectedIssueIds.size === 0){ alert('No issues selected.'); return; }
+  showSpinner('Assigning...');
+  try {
+    await loadDB();
+    selectedIssueIds.forEach(id => {
+      const issue = db.issues.find(i=>i.id===id);
+      if(issue){
+        if(!issue.assignedTo) issue.assignedTo = [];
+        if(!issue.assignedTo.includes(person)) issue.assignedTo.push(person);
+      }
+    });
+    await saveDB();
+    hideSpinner();
+    clearSelection();
+    buildAssigneeFilter();
+    renderDashboard();
+  } catch(e){ hideSpinner(); alert('Failed: '+e.message); }
+}
+
+async function bulkDone() {
+  if(selectedIssueIds.size === 0){ alert('No issues selected.'); return; }
+  showSpinner('Updating...');
+  try {
+    await loadDB();
+    selectedIssueIds.forEach(id => {
+      const issue = db.issues.find(i=>i.id===id);
+      if(issue) issue.done = true;
+    });
+    await saveDB();
+    hideSpinner();
+    clearSelection();
+    renderDashboard();
+  } catch(e){ hideSpinner(); alert('Failed: '+e.message); }
+}
+
 function sendAssignments() {
   const open = db.issues.filter(i=>!i.done&&!i.allClear&&i.assignedTo?.length>0);
   if(open.length===0){ alert('No assigned issues to send.'); return; }
