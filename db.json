@@ -232,7 +232,7 @@
       "cat": "Furniture",
       "item": "Straight-backed chair worn/replace",
       "note": "",
-      "done": false,
+      "done": true,
       "allClear": false,
       "assignedTo": [],
       "completionNote": ""
