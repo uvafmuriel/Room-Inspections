@@ -20,8 +20,6 @@
   --safe-bottom:env(safe-area-inset-bottom,0px)
 }
 html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);font-size:16px;-webkit-font-smoothing:antialiased}
-
-/* ── Layout ── */
 #app{min-height:100vh;display:flex;flex-direction:column}
 .topbar{background:#1a1a18;color:#f5f3ee;padding:14px 16px 12px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100}
 .topbar-logo{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -34,8 +32,6 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .mode-btn.active{background:var(--accent);color:#fff}
 .page{display:none}
 .page.active{display:block}
-
-/* ── Setup ── */
 .wrap{padding:20px 16px 100px;max-width:500px;margin:0 auto}
 .field-group{margin-bottom:14px}
 .field-group label{display:block;font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px}
@@ -47,11 +43,11 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .rooms-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
 .room-chip{padding:9px 4px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;text-align:center;-webkit-appearance:none;position:relative}
 .room-chip.selected{background:#1a1a18;border-color:#1a1a18;color:#f5f3ee}
+.room-chip.trade-done{background:var(--green-light);border-color:var(--green);color:var(--green-text)}
+.room-chip.trade-done::after{content:'✓';position:absolute;top:1px;right:3px;font-size:8px;font-weight:700;color:var(--green)}
 .room-chip.has-issues{border-color:var(--amber);background:var(--amber-light);color:var(--amber-text)}
-.room-chip.has-issues.selected{background:#1a1a18;border-color:#1a1a18;color:#f5f3ee}
+.room-chip.has-issues.selected,.room-chip.trade-done.selected{background:#1a1a18;border-color:#1a1a18;color:#f5f3ee}
 .start-btn{width:100%;margin-top:20px;padding:15px;background:var(--accent);color:white;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;border:none;border-radius:var(--radius);cursor:pointer}
-
-/* ── Issue form ── */
 .room-header{background:#1a1a18;color:#f5f3ee;padding:12px 16px;display:flex;align-items:center;gap:10px}
 .room-header-info{flex:1}
 .room-header-info h2{font-size:16px;font-weight:600}
@@ -67,38 +63,35 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .issue-item-row:last-child{border-bottom:none}
 .issue-item-row.selected{background:var(--amber-light)}
 .issue-item-name{flex:1;font-size:13px;font-weight:500}
-.issue-item-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.issue-item-row.selected .issue-item-check{background:var(--amber);border-color:var(--amber);color:white;font-size:12px}
+.issue-item-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px}
+.issue-item-row.selected .issue-item-check{background:var(--amber);border-color:var(--amber);color:white}
 .note-area{margin:0 14px 10px;padding:9px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;width:calc(100% - 28px);resize:none;display:none}
 .note-area.visible{display:block}
 .add-custom-row{padding:10px 14px;display:flex;gap:8px;border-top:1px solid var(--border)}
 .add-custom-input{flex:1;padding:8px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;outline:none}
 .add-custom-btn{padding:8px 14px;background:#1a1a18;color:#f5f3ee;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
-
-/* ── Bottom bar ── */
 .bottom-bar{position:fixed;bottom:0;left:0;right:0;background:#1a1a18;padding:12px 16px;padding-bottom:calc(12px + var(--safe-bottom));display:flex;gap:10px;z-index:100}
 .bottom-btn{flex:1;padding:14px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none}
 .bottom-btn.outline{background:rgba(255,255,255,.12);color:#f5f3ee}
 .bottom-btn.primary{background:var(--accent);color:white}
-
-/* ── Submit overlay ── */
 .submit-overlay{position:fixed;inset:0;background:rgba(26,26,24,.7);display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;z-index:200}
 .submit-overlay.visible{display:flex}
 .spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.2);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .submit-msg{color:white;font-size:15px;font-weight:500}
-
-/* ── Manager dashboard ── */
+/* Dashboard */
 .dashboard-wrap{padding:12px 16px 80px}
-.filter-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
-.filter-btn{padding:7px 14px;border-radius:99px;border:1.5px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer}
-.filter-btn.active{background:#1a1a18;border-color:#1a1a18;color:#f5f3ee}
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;text-align:center}
 .stat-box .num{font-size:22px;font-weight:600;font-family:'DM Mono',monospace}
 .stat-box .lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
+.filter-section{margin-bottom:12px}
+.filter-label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.filter-pills{display:flex;gap:6px;flex-wrap:wrap}
+.filter-pill{padding:5px 12px;border-radius:99px;border:1.5px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;white-space:nowrap}
+.filter-pill.active{background:#1a1a18;border-color:#1a1a18;color:#f5f3ee}
 .issue-group{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
-.issue-group-header{background:var(--surface2);padding:10px 14px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.issue-group-header{background:var(--surface2);padding:10px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
 .issue-group-title{flex:1;font-size:14px;font-weight:600}
 .issue-group-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--accent-light);color:var(--accent-text)}
 .issue-group-badge.done{background:var(--green-light);color:var(--green-text)}
@@ -106,30 +99,51 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .issue-group-body.open{display:block}
 .issue-row{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start}
 .issue-row:last-child{border-bottom:none}
-.issue-row.done{opacity:.5}
-.issue-row-info{flex:1}
-.issue-row-item{font-size:13px;font-weight:500}
+.issue-row.done-row{background:var(--green-light)}
+.issue-row-info{flex:1;min-width:0}
+.issue-row-item{font-size:13px;font-weight:600}
 .issue-row-note{font-size:12px;color:var(--text2);margin-top:2px}
 .issue-row-meta{font-size:11px;color:var(--text3);margin-top:3px}
-.issue-actions{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0}
-.assign-select{font-size:11px;padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text2);cursor:pointer;max-width:120px}
-.done-btn{font-size:11px;padding:4px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--text2)}
+.issue-row-assigned{font-size:11px;color:var(--blue-text);margin-top:2px;font-weight:500}
+.issue-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0}
+/* Multi-select assign */
+.assign-dropdown{position:relative}
+.assign-btn{font-size:11px;padding:5px 10px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text2);cursor:pointer;white-space:nowrap}
+.assign-btn.has-assigns{background:var(--blue-light);border-color:var(--blue);color:var(--blue-text)}
+.assign-menu{position:absolute;right:0;top:100%;margin-top:4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);box-shadow:0 4px 16px rgba(0,0,0,.1);z-index:50;min-width:160px;display:none}
+.assign-menu.open{display:block}
+.assign-menu-item{display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;font-size:13px;border-bottom:1px solid var(--border)}
+.assign-menu-item:last-child{border-bottom:none}
+.assign-menu-item:hover{background:var(--surface2)}
+.assign-menu-item .chk{width:16px;height:16px;border-radius:4px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.assign-menu-item.checked .chk{background:var(--blue);border-color:var(--blue);color:white}
+.done-btn{font-size:11px;padding:5px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--text2);white-space:nowrap}
 .done-btn.completed{background:var(--green-light);border-color:var(--green);color:var(--green-text)}
-.send-assign-btn{width:100%;padding:12px;background:#1a1a18;color:#f5f3ee;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-top:8px}
+/* Completion note modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;z-index:300}
+.modal-overlay.visible{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;padding:20px 16px;padding-bottom:calc(20px + var(--safe-bottom));width:100%;max-width:500px}
+.modal h3{font-size:16px;font-weight:600;margin-bottom:12px}
+.modal textarea{width:100%;padding:12px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;resize:none;margin-bottom:12px}
+.modal-btns{display:flex;gap:10px}
+.modal-btn{flex:1;padding:13px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none}
+.modal-btn.primary{background:var(--green);color:white}
+.modal-btn.outline{background:var(--surface2);color:var(--text)}
+.dashboard-actions{display:flex;gap:8px;margin-bottom:12px}
+.dash-action-btn{flex:1;padding:11px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--surface);color:var(--text)}
+.dash-action-btn.accent{background:var(--accent);border-color:var(--accent);color:white}
 .empty-state{text-align:center;padding:40px 20px;color:var(--text3);font-size:14px}
+.dup-warning{background:var(--amber-light);border:1px solid var(--amber);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--amber-text);font-weight:500;display:none}
+.dup-warning.visible{display:block}
 </style>
 </head>
 <body>
 <div id="app">
-
 <div class="topbar">
   <div class="topbar-logo">
     <svg viewBox="0 0 18 18" fill="none"><rect x="2" y="9" width="14" height="7" rx="1.5" fill="white" opacity=".9"/><path d="M1 9.5L9 3l8 6.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </div>
-  <div class="topbar-title">
-    <h1>Room Inspections</h1>
-    <p id="topbar-sub">Lawn & Range v2</p>
-  </div>
+  <div class="topbar-title"><h1>Room Inspections</h1><p id="topbar-sub">Lawn & Range v2</p></div>
   <div class="mode-toggle">
     <button class="mode-btn active" id="btn-inspect" onclick="setMode('inspect')">Inspect</button>
     <button class="mode-btn" id="btn-manage" onclick="setMode('manage')">Manage</button>
@@ -141,12 +155,23 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
   <div class="submit-msg" id="submit-msg">Saving...</div>
 </div>
 
+<!-- Completion note modal -->
+<div class="modal-overlay" id="done-modal">
+  <div class="modal">
+    <h3>Mark as Done</h3>
+    <textarea id="done-note" rows="3" placeholder="Optional: add a completion note…"></textarea>
+    <div class="modal-btns">
+      <button class="modal-btn outline" onclick="closeDoneModal()">Cancel</button>
+      <button class="modal-btn primary" onclick="confirmDone()">Mark Done ✓</button>
+    </div>
+  </div>
+</div>
+
 <!-- INSPECT MODE -->
 <div class="page active" id="page-inspect">
-
-  <!-- Setup screen -->
   <div id="screen-setup">
     <div class="wrap">
+      <div class="dup-warning" id="dup-warning"></div>
       <div class="field-group">
         <label>Your name</label>
         <select id="sel-inspector" onchange="autoSetTrade(this)">
@@ -192,8 +217,6 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
       <button class="start-btn" onclick="startInspection()">Start Inspection →</button>
     </div>
   </div>
-
-  <!-- Issue entry screen -->
   <div id="screen-issues" style="display:none">
     <div class="room-header">
       <button class="back-btn" onclick="goBack()">← Back</button>
@@ -205,41 +228,81 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
     <div class="issues-list" id="issues-list"></div>
     <div class="bottom-bar">
       <button class="bottom-btn outline" onclick="goBack()">← Back</button>
-      <button class="bottom-btn primary" onclick="submitIssues()">Submit Issues →</button>
+      <button class="bottom-btn primary" onclick="submitIssues()">Submit →</button>
     </div>
   </div>
-
 </div>
 
 <!-- MANAGE MODE -->
 <div class="page" id="page-manage">
   <div class="dashboard-wrap">
     <div class="stats-row">
-      <div class="stat-box"><div class="num" id="stat-total">0</div><div class="lbl">Total Issues</div></div>
+      <div class="stat-box"><div class="num" id="stat-total">0</div><div class="lbl">Total</div></div>
       <div class="stat-box"><div class="num" id="stat-open" style="color:var(--accent)">0</div><div class="lbl">Open</div></div>
       <div class="stat-box"><div class="num" id="stat-done" style="color:var(--green)">0</div><div class="lbl">Done</div></div>
     </div>
-    <div class="filter-bar" id="filter-bar">
-      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
-      <button class="filter-btn" onclick="setFilter('Carpentry',this)">Carpentry</button>
-      <button class="filter-btn" onclick="setFilter('Electrical',this)">Electrical</button>
-      <button class="filter-btn" onclick="setFilter('Plumbing',this)">Plumbing</button>
-      <button class="filter-btn" onclick="setFilter('HVAC',this)">HVAC</button>
-      <button class="filter-btn" onclick="setFilter('open',this)">Open only</button>
+    <div class="dashboard-actions">
+      <button class="dash-action-btn" onclick="sendAssignments()">✉ Send Assignments</button>
+      <button class="dash-action-btn accent" onclick="exportExcel()">⬇ Export Excel</button>
+    </div>
+    <div class="filter-section">
+      <div class="filter-label">Trade</div>
+      <div class="filter-pills" id="filter-trade">
+        <button class="filter-pill active" onclick="setFilter('trade','all',this)">All</button>
+        <button class="filter-pill" onclick="setFilter('trade','Carpentry',this)">Carpentry</button>
+        <button class="filter-pill" onclick="setFilter('trade','Electrical',this)">Electrical</button>
+        <button class="filter-pill" onclick="setFilter('trade','Plumbing',this)">Plumbing</button>
+        <button class="filter-pill" onclick="setFilter('trade','HVAC',this)">HVAC</button>
+      </div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-label">Area</div>
+      <div class="filter-pills" id="filter-area">
+        <button class="filter-pill active" onclick="setFilter('area','all',this)">All</button>
+        <button class="filter-pill" onclick="setFilter('area','West Lawn',this)">West Lawn</button>
+        <button class="filter-pill" onclick="setFilter('area','West Range',this)">West Range</button>
+        <button class="filter-pill" onclick="setFilter('area','East Lawn',this)">East Lawn</button>
+        <button class="filter-pill" onclick="setFilter('area','East Range',this)">East Range</button>
+      </div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-label">Category</div>
+      <div class="filter-pills" id="filter-cat">
+        <button class="filter-pill active" onclick="setFilter('cat','all',this)">All</button>
+        <button class="filter-pill" onclick="setFilter('cat','Paint & Plaster',this)">Paint & Plaster</button>
+        <button class="filter-pill" onclick="setFilter('cat','Doors',this)">Doors</button>
+        <button class="filter-pill" onclick="setFilter('cat','Windows & Blinds',this)">Windows</button>
+        <button class="filter-pill" onclick="setFilter('cat','Furniture',this)">Furniture</button>
+        <button class="filter-pill" onclick="setFilter('cat','Fireplace',this)">Fireplace</button>
+        <button class="filter-pill" onclick="setFilter('cat','Other',this)">Other</button>
+      </div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-label">Assignee</div>
+      <div class="filter-pills" id="filter-assignee">
+        <button class="filter-pill active" onclick="setFilter('assignee','all',this)">All</button>
+        <button class="filter-pill" onclick="setFilter('assignee','unassigned',this)">Unassigned</button>
+      </div>
+    </div>
+    <div class="filter-section">
+      <div class="filter-label">Status</div>
+      <div class="filter-pills">
+        <button class="filter-pill active" onclick="setFilter('status','all',this)">All</button>
+        <button class="filter-pill" onclick="setFilter('status','open',this)">Open</button>
+        <button class="filter-pill" onclick="setFilter('status','done',this)">Done</button>
+      </div>
     </div>
     <div id="dashboard-list"></div>
-    <button class="send-assign-btn" onclick="sendAssignments()">✉ Send Assignment Emails</button>
   </div>
 </div>
-
 </div>
 
 <script>
-const GITHUB_TOKEN = 'ghp_L9BHj92Ozg'+'JPxZTzrX0Vxn'+'LldB19zV2UWdZE';
+const t1='ghp_L9BHj92Ozg', t2='JPxZTzrX0Vxn', t3='LldB19zV2UWdZE';
+const GITHUB_TOKEN = t1+t2+t3;
 const REPO = 'uvafmuriel/Room-Inspections';
 const DB_PATH = 'db.json';
 
-// ── Data ──────────────────────────────────────────────────────────────────
 const ROOM_CATEGORIES = [
   { label:'West Lawn',  rooms: Array.from({length:28},(_,i)=>String(1+i*2)).filter(n=>+n<=55) },
   { label:'West Range', rooms: Array.from({length:27},(_,i)=>String(1+i*2)).filter(n=>+n<=53) },
@@ -271,52 +334,44 @@ const CATEGORIES = {
   ],
 };
 
+const TRADE_PEOPLE = {
+  Carpentry: ['Bryan','Mike','Jon','Lex','Josh','Corey Walker'],
+  Electrical: ['Morgan','Brittany','Anthony','Jalisa','Richard'],
+  Plumbing: ['Tim','Cris','Cody','Duane','Leo'],
+  HVAC: ['Jason','Wayne'],
+};
+
 const SUPERVISORS = {
-  Carpentry: [
-    { name:'Corey Walker', email:'jtb4vt@virginia.edu' },
-    { name:'Josh', email:'eua3fk@virginia.edu' },
-  ],
-  Electrical: [{ name:'Benji', email:'brb6u@virginia.edu' }],
-  Plumbing: [{ name:'Benji', email:'brb6u@virginia.edu' }],
-  HVAC: [{ name:'Wayne', email:'mfc5xv@virginia.edu' }],
+  Carpentry: [{name:'Corey Walker',email:'jtb4vt@virginia.edu'},{name:'Josh',email:'eua3fk@virginia.edu'}],
+  Electrical: [{name:'Benji',email:'brb6u@virginia.edu'}],
+  Plumbing: [{name:'Benji',email:'brb6u@virginia.edu'}],
+  HVAC: [{name:'Wayne',email:'mfc5xv@virginia.edu'}],
 };
 
 const INSPECTOR_EMAILS = {
-  'Bryan': 'bmf5p@virginia.edu',
-  'Mike': 'nky2hc@virginia.edu',
-  'Jon': 'zap8gp@virginia.edu',
-  'Lex': 'vef2hw@virginia.edu',
-  'Josh': 'eua3fk@virginia.edu',
-  'Corey Walker': 'jtb4vt@virginia.edu',
-  'Morgan': 'mtg8t@virginia.edu',
-  'Richard': 'rcw7j@virginia.edu',
-  'Brittany': 'bnc3te@virginia.edu',
-  'Anthony': 'yup8bc@virginia.edu',
-  'Jalisa': 'jls3pc@virginia.edu',
-  'Tim': 'tjs8jp@virginia.edu',
-  'Cris': 'dpd7pu@virginia.edu',
-  'Cody': 'dke9ra@virginia.edu',
-  'Duane': 'dad2j@virginia.edu',
-  'Leo': 'hqc2zk@virginia.edu',
-  'Jason': 'jpm4mz@virginia.edu',
-  'Wayne': 'mfc5xv@virginia.edu',
-  'Benji': 'brb6u@virginia.edu',
+  'Bryan':'bmf5p@virginia.edu','Mike':'nky2hc@virginia.edu','Jon':'zap8gp@virginia.edu',
+  'Lex':'vef2hw@virginia.edu','Josh':'eua3fk@virginia.edu','Corey Walker':'jtb4vt@virginia.edu',
+  'Morgan':'mtg8t@virginia.edu','Richard':'rcw7j@virginia.edu','Brittany':'bnc3te@virginia.edu',
+  'Anthony':'yup8bc@virginia.edu','Jalisa':'jls3pc@virginia.edu','Tim':'tjs8jp@virginia.edu',
+  'Cris':'dpd7pu@virginia.edu','Cody':'dke9ra@virginia.edu','Duane':'dad2j@virginia.edu',
+  'Leo':'hqc2zk@virginia.edu','Jason':'jpm4mz@virginia.edu','Wayne':'mfc5xv@virginia.edu',
+  'Benji':'brb6u@virginia.edu',
 };
 
-let db = { issues: [], assignments: [], lastUpdated: '' };
+let db = { issues:[], lastUpdated:'' };
 let dbSha = '';
 let activeCat = 0;
 let selectedRoom = '';
 let selectedArea = '';
-let currentIssues = {}; // { "catName___itemName": { selected: bool, note: '' } }
-let activeFilter = 'all';
-let currentMode = 'inspect';
+let currentIssues = {};
+let filters = { trade:'all', area:'all', cat:'all', assignee:'all', status:'all' };
+let pendingDoneId = null;
+let openMenuId = null;
 
-// ── GitHub DB ─────────────────────────────────────────────────────────────
+// ── GitHub DB ──────────────────────────────────────────────────────────────
 async function loadDB() {
-  const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${DB_PATH}`, {
-    headers: { Authorization: `token ${GITHUB_TOKEN}` }
-  });
+  const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${DB_PATH}`,
+    { headers:{ Authorization:`token ${GITHUB_TOKEN}` } });
   const data = await resp.json();
   dbSha = data.sha;
   db = JSON.parse(atob(data.content.replace(/\n/g,'')));
@@ -324,38 +379,36 @@ async function loadDB() {
 }
 
 async function saveDB() {
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(db,null,2))));
   const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${DB_PATH}`, {
-    method: 'PUT',
-    headers: { Authorization: `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: 'Update inspection data', content, sha: dbSha })
+    method:'PUT',
+    headers:{ Authorization:`token ${GITHUB_TOKEN}`, 'Content-Type':'application/json' },
+    body: JSON.stringify({ message:'Update inspection data', content, sha:dbSha })
   });
   const data = await resp.json();
   dbSha = data.content.sha;
 }
 
-// ── Mode toggle ───────────────────────────────────────────────────────────
+// ── Mode ───────────────────────────────────────────────────────────────────
 function setMode(mode) {
-  currentMode = mode;
   document.getElementById('btn-inspect').classList.toggle('active', mode==='inspect');
   document.getElementById('btn-manage').classList.toggle('active', mode==='manage');
   document.getElementById('page-inspect').classList.toggle('active', mode==='inspect');
   document.getElementById('page-manage').classList.toggle('active', mode==='manage');
-  if(mode==='manage') { loadDB().then(renderDashboard); }
+  if(mode==='manage') loadDB().then(()=>{ buildAssigneeFilter(); renderDashboard(); });
 }
 
-// ── Setup page ────────────────────────────────────────────────────────────
+// ── Setup ──────────────────────────────────────────────────────────────────
 const areaTabs = document.getElementById('area-tabs');
 ROOM_CATEGORIES.forEach((cat,i) => {
   const btn = document.createElement('button');
-  btn.className = 'cat-tab' + (i===0?' active':'');
+  btn.className = 'cat-tab'+(i===0?' active':'');
   btn.textContent = cat.label;
   btn.onclick = () => {
-    activeCat = i;
-    document.querySelectorAll('.cat-tab').forEach((t,j) => t.classList.toggle('active',j===i));
+    activeCat = i; selectedArea = cat.label;
+    document.querySelectorAll('.cat-tab').forEach((t,j)=>t.classList.toggle('active',j===i));
     buildRoomChips(i);
     selectedRoom = '';
-    selectedArea = cat.label;
   };
   areaTabs.appendChild(btn);
 });
@@ -364,43 +417,56 @@ selectedArea = ROOM_CATEGORIES[0].label;
 function buildRoomChips(ci) {
   const grid = document.getElementById('rooms-grid');
   grid.innerHTML = '';
+  const trade = document.getElementById('sel-trade').value;
+  const area = ROOM_CATEGORIES[ci].label;
   ROOM_CATEGORIES[ci].rooms.forEach(r => {
     const btn = document.createElement('button');
     btn.className = 'room-chip';
     btn.textContent = r;
-    const roomIssues = db.issues.filter(i => i.room===r && i.area===ROOM_CATEGORIES[ci].label && !i.done);
-    if(roomIssues.length > 0) btn.classList.add('has-issues');
+    // Check if this trade has submitted for this room
+    const submitted = db.issues.some(i => i.room===r && i.area===area && i.trade===trade);
+    const hasOpen = db.issues.some(i => i.room===r && i.area===area && i.trade===trade && !i.done && !i.allClear);
+    if(submitted && !hasOpen) btn.classList.add('trade-done');
+    else if(hasOpen) btn.classList.add('has-issues');
     btn.onclick = () => {
-      document.querySelectorAll('.room-chip').forEach(c => c.classList.remove('selected'));
+      document.querySelectorAll('.room-chip').forEach(c=>c.classList.remove('selected'));
       btn.classList.add('selected');
       selectedRoom = r;
+      checkDuplicate(r, area, trade);
     };
     grid.appendChild(btn);
   });
 }
 
-function filterCategories() {}
+function checkDuplicate(room, area, trade) {
+  const today = new Date().toLocaleDateString('en-US');
+  const dup = db.issues.find(i => i.room===room && i.area===area && i.trade===trade &&
+    new Date(i.timestamp).toLocaleDateString('en-US')===today);
+  const warn = document.getElementById('dup-warning');
+  if(dup) {
+    warn.textContent = `⚠️ ${trade} already submitted for Room ${room} ${area} today (${dup.inspector}, ${dup.timestamp})`;
+    warn.classList.add('visible');
+  } else {
+    warn.classList.remove('visible');
+  }
+}
 
 function autoSetTrade(sel) {
   const opt = sel.options[sel.selectedIndex];
-  const trade = opt.getAttribute('data-trade') || '';
+  const trade = opt.getAttribute('data-trade')||'';
   document.getElementById('sel-trade').value = trade;
   const display = document.getElementById('trade-display');
-  const label = document.getElementById('trade-label');
-  if(trade) {
-    label.textContent = trade;
-    display.style.display = 'block';
-  } else {
-    display.style.display = 'none';
-  }
+  document.getElementById('trade-label').textContent = trade;
+  display.style.display = trade ? 'block' : 'none';
+  if(selectedArea) buildRoomChips(activeCat);
 }
 
 function startInspection() {
   const inspector = document.getElementById('sel-inspector').value;
   const trade = document.getElementById('sel-trade').value;
-  if(!inspector) { alert('Please select your name.'); return; }
-  if(!trade) { alert('Please select your trade.'); return; }
-  if(!selectedRoom) { alert('Please select a room.'); return; }
+  if(!inspector){ alert('Please select your name.'); return; }
+  if(!trade){ alert('Please select your trade.'); return; }
+  if(!selectedRoom){ alert('Please select a room.'); return; }
   currentIssues = {};
   buildIssueForm(trade);
   document.getElementById('room-header-title').textContent = `Room ${selectedRoom}`;
@@ -409,135 +475,103 @@ function startInspection() {
   document.getElementById('screen-issues').style.display = 'block';
 }
 
-// ── Issue form ────────────────────────────────────────────────────────────
+// ── Issue form ─────────────────────────────────────────────────────────────
+function safeId(s){ return s.replace(/[^a-zA-Z0-9]/g,'_'); }
+
 function buildIssueForm(trade) {
   const list = document.getElementById('issues-list');
   list.innerHTML = '';
-  const cats = CATEGORIES[trade] || [];
-  cats.forEach(cat => {
+  (CATEGORIES[trade]||[]).forEach(cat => {
     const card = document.createElement('div');
     card.className = 'issue-card';
-    card.innerHTML = `<div class="issue-card-header"><span class="cat-icon">${cat.icon}</span><span class="cat-name">${cat.name}</span></div><div class="issue-items" id="items-${safeId(cat.name)}"></div>`;
-    const itemsDiv = card.querySelector(`#items-${safeId(cat.name)}`);
-
+    const sid = safeId(cat.name);
+    card.innerHTML = `<div class="issue-card-header"><span class="cat-icon">${cat.icon}</span><span class="cat-name">${cat.name}</span></div><div class="issue-items" id="items-${sid}"></div>`;
+    const itemsDiv = card.querySelector(`#items-${sid}`);
     cat.items.forEach(item => {
       const key = `${cat.name}___${item}`;
       const row = document.createElement('div');
       row.className = 'issue-item-row';
-      row.id = `row-${safeId(key)}`;
-      row.innerHTML = `
-        <div class="issue-item-check" id="chk-${safeId(key)}"></div>
-        <span class="issue-item-name">${item}</span>`;
+      row.innerHTML = `<div class="issue-item-check" id="chk-${safeId(key)}"></div><span class="issue-item-name">${item}</span>`;
       row.onclick = () => toggleIssue(key, cat.name, item, trade);
       itemsDiv.appendChild(row);
-
-      const noteArea = document.createElement('textarea');
-      noteArea.className = 'note-area';
-      noteArea.id = `note-${safeId(key)}`;
-      noteArea.placeholder = 'Add details…';
-      noteArea.rows = 2;
-      noteArea.oninput = (e) => {
-        if(!currentIssues[key]) currentIssues[key] = { cat: cat.name, item, trade, note: '' };
-        currentIssues[key].note = e.target.value;
-      };
-      itemsDiv.appendChild(noteArea);
+      const ta = document.createElement('textarea');
+      ta.className = 'note-area';
+      ta.id = `note-${safeId(key)}`;
+      ta.placeholder = 'Add details…';
+      ta.rows = 2;
+      ta.oninput = e => { if(currentIssues[key]) currentIssues[key].note = e.target.value; };
+      itemsDiv.appendChild(ta);
     });
-
-    // Add custom item
     const addRow = document.createElement('div');
     addRow.className = 'add-custom-row';
-    addRow.innerHTML = `<input class="add-custom-input" id="custom-${safeId(cat.name)}" placeholder="Add custom issue…" /><button class="add-custom-btn" onclick="addCustomIssue('${safeId(cat.name)}','${cat.name}','${trade}')">+ Add</button>`;
+    addRow.innerHTML = `<input class="add-custom-input" id="custom-${sid}" placeholder="Add custom issue…"/><button class="add-custom-btn" onclick="addCustomIssue('${sid}','${cat.name}','${trade}')">+ Add</button>`;
     card.appendChild(addRow);
     list.appendChild(card);
   });
 }
 
-function safeId(str) { return str.replace(/[^a-zA-Z0-9]/g,'_'); }
-
 function toggleIssue(key, catName, item, trade) {
-  if(!currentIssues[key]) {
-    currentIssues[key] = { cat: catName, item, trade, note: '', selected: true };
-  } else {
-    currentIssues[key].selected = !currentIssues[key].selected;
-  }
-  const row = document.getElementById(`row-${safeId(key)}`);
-  const chk = document.getElementById(`chk-${safeId(key)}`);
-  const note = document.getElementById(`note-${safeId(key)}`);
+  if(!currentIssues[key]) currentIssues[key] = { cat:catName, item, trade, note:'', selected:true };
+  else currentIssues[key].selected = !currentIssues[key].selected;
+  const sid = safeId(key);
+  const row = document.querySelector(`#chk-${sid}`)?.parentElement;
+  const chk = document.getElementById(`chk-${sid}`);
+  const note = document.getElementById(`note-${sid}`);
   const sel = currentIssues[key].selected;
-  row.classList.toggle('selected', sel);
-  chk.textContent = sel ? '✓' : '';
-  note.classList.toggle('visible', sel);
-  if(sel) note.focus();
+  row?.classList.toggle('selected', sel);
+  if(chk) chk.textContent = sel?'✓':'';
+  note?.classList.toggle('visible', sel);
+  if(sel) note?.focus();
 }
 
-function addCustomIssue(safeCatId, catName, trade) {
-  const input = document.getElementById(`custom-${safeCatId}`);
+function addCustomIssue(sid, catName, trade) {
+  const input = document.getElementById(`custom-${sid}`);
   const val = input.value.trim();
   if(!val) return;
   const key = `${catName}___${val}`;
-  currentIssues[key] = { cat: catName, item: val, trade, note: '', selected: true };
-  const itemsDiv = document.getElementById(`items-${safeCatId}`);
+  currentIssues[key] = { cat:catName, item:val, trade, note:'', selected:true };
+  const itemsDiv = document.getElementById(`items-${sid}`);
   const row = document.createElement('div');
   row.className = 'issue-item-row selected';
   row.innerHTML = `<div class="issue-item-check">✓</div><span class="issue-item-name">${val}</span>`;
-  const noteArea = document.createElement('textarea');
-  noteArea.className = 'note-area visible';
-  noteArea.placeholder = 'Add details…';
-  noteArea.rows = 2;
-  noteArea.oninput = (e) => { currentIssues[key].note = e.target.value; };
-  itemsDiv.appendChild(row);
-  itemsDiv.appendChild(noteArea);
+  const ta = document.createElement('textarea');
+  ta.className = 'note-area visible'; ta.placeholder = 'Add details…'; ta.rows = 2;
+  ta.oninput = e => { currentIssues[key].note = e.target.value; };
+  itemsDiv.appendChild(row); itemsDiv.appendChild(ta);
   input.value = '';
 }
 
 async function submitIssues() {
-  const selected = Object.entries(currentIssues).filter(([k,v]) => v.selected);
+  const selected = Object.entries(currentIssues).filter(([,v])=>v.selected);
   const inspector = document.getElementById('sel-inspector').value;
   const trade = document.getElementById('sel-trade').value;
   const now = new Date();
-  const timestamp = now.toLocaleString('en-US', { month:'numeric', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit', hour12:true });
-
-  showSpinner('Saving issues...');
+  const timestamp = now.toLocaleString('en-US',{month:'numeric',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
+  showSpinner('Saving...');
   try {
     await loadDB();
-    if(selected.length === 0) {
-      // All clear
-      db.issues.push({
-        id: Date.now().toString(),
-        room: selectedRoom, area: selectedArea, trade,
-        inspector, timestamp,
-        cat: 'General', item: 'No issues', note: '', done: true, allClear: true,
-        assignedTo: '', assignedTrade: trade
-      });
+    if(selected.length===0) {
+      db.issues.push({ id:Date.now().toString(), room:selectedRoom, area:selectedArea, trade,
+        inspector, timestamp, cat:'General', item:'No issues', note:'', done:true, allClear:true, assignedTo:[] });
     } else {
-      selected.forEach(([k,v]) => {
-        db.issues.push({
-          id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-          room: selectedRoom, area: selectedArea, trade,
-          inspector, timestamp,
-          cat: v.cat, item: v.item, note: v.note,
-          done: false, allClear: false,
-          assignedTo: '', assignedTrade: trade
-        });
+      selected.forEach(([,v]) => {
+        db.issues.push({ id:`${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          room:selectedRoom, area:selectedArea, trade, inspector, timestamp,
+          cat:v.cat, item:v.item, note:v.note, done:false, allClear:false,
+          assignedTo:[], completionNote:'' });
       });
     }
     db.lastUpdated = timestamp;
     await saveDB();
     hideSpinner();
-    showSuccess(selected.length);
-  } catch(e) {
-    hideSpinner();
-    alert('Save failed: ' + e.message);
-  }
-}
-
-function showSuccess(count) {
-  document.getElementById('screen-issues').style.display = 'none';
-  document.getElementById('screen-setup').style.display = 'block';
-  selectedRoom = '';
-  document.querySelectorAll('.room-chip').forEach(c => c.classList.remove('selected'));
-  buildRoomChips(activeCat);
-  alert(count === 0 ? '✅ All clear logged!' : `✅ ${count} issue${count>1?'s':''} saved successfully!`);
+    selectedRoom = '';
+    document.querySelectorAll('.room-chip').forEach(c=>c.classList.remove('selected'));
+    document.getElementById('dup-warning').classList.remove('visible');
+    buildRoomChips(activeCat);
+    document.getElementById('screen-issues').style.display = 'none';
+    document.getElementById('screen-setup').style.display = 'block';
+    alert(selected.length===0 ? '✅ All clear logged!' : `✅ ${selected.length} issue${selected.length>1?'s':''} saved!`);
+  } catch(e) { hideSpinner(); alert('Save failed: '+e.message); }
 }
 
 function goBack() {
@@ -545,46 +579,65 @@ function goBack() {
   document.getElementById('screen-setup').style.display = 'block';
 }
 
-function showSpinner(msg) {
-  document.getElementById('submit-msg').textContent = msg;
-  document.getElementById('submit-overlay').classList.add('visible');
-}
-function hideSpinner() { document.getElementById('submit-overlay').classList.remove('visible'); }
+function showSpinner(msg){ document.getElementById('submit-msg').textContent=msg; document.getElementById('submit-overlay').classList.add('visible'); }
+function hideSpinner(){ document.getElementById('submit-overlay').classList.remove('visible'); }
 
-// ── Dashboard ─────────────────────────────────────────────────────────────
-function setFilter(f, btn) {
-  activeFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+// ── Dashboard ──────────────────────────────────────────────────────────────
+function setFilter(type, val, btn) {
+  filters[type] = val;
+  const container = btn.closest('.filter-pills') || btn.parentElement;
+  container.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderDashboard();
 }
 
-function renderDashboard() {
-  const issues = db.issues.filter(i => !i.allClear);
-  const filtered = issues.filter(i => {
-    if(activeFilter === 'all') return true;
-    if(activeFilter === 'open') return !i.done;
-    return i.trade === activeFilter;
+function buildAssigneeFilter() {
+  const all = new Set();
+  db.issues.forEach(i => (i.assignedTo||[]).forEach(a=>all.add(a)));
+  const bar = document.getElementById('filter-assignee');
+  const existing = Array.from(bar.querySelectorAll('.filter-pill'));
+  const names = Array.from(all);
+  names.forEach(name => {
+    if(!existing.find(b=>b.textContent===name)) {
+      const btn = document.createElement('button');
+      btn.className = 'filter-pill';
+      btn.textContent = name;
+      btn.onclick = () => setFilter('assignee', name, btn);
+      bar.appendChild(btn);
+    }
   });
+}
 
-  document.getElementById('stat-total').textContent = issues.length;
-  document.getElementById('stat-open').textContent = issues.filter(i=>!i.done).length;
-  document.getElementById('stat-done').textContent = issues.filter(i=>i.done).length;
+function getFilteredIssues() {
+  return db.issues.filter(i => {
+    if(i.allClear) return false;
+    if(filters.trade!=='all' && i.trade!==filters.trade) return false;
+    if(filters.area!=='all' && i.area!==filters.area) return false;
+    if(filters.cat!=='all' && i.cat!==filters.cat) return false;
+    if(filters.status==='open' && i.done) return false;
+    if(filters.status==='done' && !i.done) return false;
+    if(filters.assignee==='unassigned' && i.assignedTo?.length>0) return false;
+    if(filters.assignee!=='all' && filters.assignee!=='unassigned' && !i.assignedTo?.includes(filters.assignee)) return false;
+    return true;
+  });
+}
+
+function renderDashboard() {
+  const filtered = getFilteredIssues();
+  const allIssues = db.issues.filter(i=>!i.allClear);
+  document.getElementById('stat-total').textContent = allIssues.length;
+  document.getElementById('stat-open').textContent = allIssues.filter(i=>!i.done).length;
+  document.getElementById('stat-done').textContent = allIssues.filter(i=>i.done).length;
 
   const list = document.getElementById('dashboard-list');
   list.innerHTML = '';
+  if(filtered.length===0){ list.innerHTML='<div class="empty-state">No issues match your filters.</div>'; return; }
 
-  if(filtered.length === 0) {
-    list.innerHTML = '<div class="empty-state">No issues found.</div>';
-    return;
-  }
-
-  // Group by area → room
   const grouped = {};
-  filtered.forEach(issue => {
-    const key = `${issue.area} — Room ${issue.room}`;
-    if(!grouped[key]) grouped[key] = [];
-    grouped[key].push(issue);
+  filtered.forEach(i => {
+    const key = `${i.area} — Room ${i.room}`;
+    if(!grouped[key]) grouped[key]=[];
+    grouped[key].push(i);
   });
 
   Object.entries(grouped).sort().forEach(([groupKey, groupIssues]) => {
@@ -594,108 +647,166 @@ function renderDashboard() {
     group.innerHTML = `
       <div class="issue-group-header" onclick="this.parentElement.querySelector('.issue-group-body').classList.toggle('open')">
         <span class="issue-group-title">${groupKey}</span>
-        <span class="issue-group-badge ${open===0?'done':''}">${open===0?'Done':open+' open'}</span>
+        <span class="issue-group-badge ${open===0?'done':''}">${open===0?'All done':open+' open'}</span>
       </div>
       <div class="issue-group-body open"></div>`;
     const body = group.querySelector('.issue-group-body');
 
     groupIssues.forEach(issue => {
       const row = document.createElement('div');
-      row.className = 'issue-row' + (issue.done?' done':'');
+      row.className = 'issue-row' + (issue.done?' done-row':'');
       row.id = `issue-${issue.id}`;
+      const assigned = issue.assignedTo||[];
+      const trade = issue.trade;
+      const people = TRADE_PEOPLE[trade]||[];
 
-      const tradeSupers = SUPERVISORS[issue.trade] || [];
-      const assignOptions = tradeSupers.map(s =>
-        `<option value="${s.name}" ${issue.assignedTo===s.name?'selected':''}>${s.name}</option>`
-      ).join('');
+      // Build assignee menu items
+      const menuItems = people.map(p => `
+        <div class="assign-menu-item ${assigned.includes(p)?'checked':''}" onclick="toggleAssign('${issue.id}','${p}',this)">
+          <div class="chk">${assigned.includes(p)?'✓':''}</div>
+          <span>${p}</span>
+        </div>`).join('');
 
       row.innerHTML = `
         <div class="issue-row-info">
           <div class="issue-row-item">${issue.cat} — ${issue.item}</div>
           ${issue.note?`<div class="issue-row-note">${issue.note}</div>`:''}
+          ${issue.completionNote?`<div class="issue-row-note" style="color:var(--green-text)">✓ ${issue.completionNote}</div>`:''}
           <div class="issue-row-meta">${issue.trade} · ${issue.inspector} · ${issue.timestamp}</div>
+          ${assigned.length?`<div class="issue-row-assigned">👤 ${assigned.join(', ')}</div>`:''}
         </div>
         <div class="issue-actions">
-          <select class="assign-select" onchange="assignIssue('${issue.id}',this.value)">
-            <option value="">Assign…</option>
-            ${assignOptions}
-          </select>
-          <button class="done-btn ${issue.done?'completed':''}" onclick="toggleDone('${issue.id}')">
+          <div class="assign-dropdown" id="menu-container-${issue.id}">
+            <button class="assign-btn ${assigned.length?'has-assigns':''}" onclick="toggleMenu('${issue.id}')">
+              ${assigned.length?'Assigned ('+assigned.length+')':'Assign…'}
+            </button>
+            <div class="assign-menu" id="menu-${issue.id}">${menuItems}</div>
+          </div>
+          <button class="done-btn ${issue.done?'completed':''}" onclick="openDoneModal('${issue.id}')">
             ${issue.done?'✓ Done':'Mark done'}
           </button>
         </div>`;
       body.appendChild(row);
     });
-
     list.appendChild(group);
   });
+
+  // Close menus on outside click
+  document.onclick = (e) => {
+    if(!e.target.closest('.assign-dropdown')) closeAllMenus();
+  };
 }
 
-async function assignIssue(id, person) {
-  showSpinner('Assigning...');
+function toggleMenu(id) {
+  const menu = document.getElementById(`menu-${id}`);
+  const isOpen = menu.classList.contains('open');
+  closeAllMenus();
+  if(!isOpen) { menu.classList.add('open'); openMenuId = id; }
+}
+
+function closeAllMenus() {
+  document.querySelectorAll('.assign-menu').forEach(m=>m.classList.remove('open'));
+  openMenuId = null;
+}
+
+async function toggleAssign(issueId, person, el) {
+  showSpinner('Updating...');
   try {
     await loadDB();
-    const issue = db.issues.find(i=>i.id===id);
-    if(issue) issue.assignedTo = person;
+    const issue = db.issues.find(i=>i.id===issueId);
+    if(!issue) return;
+    if(!issue.assignedTo) issue.assignedTo = [];
+    const idx = issue.assignedTo.indexOf(person);
+    if(idx>=0) issue.assignedTo.splice(idx,1);
+    else issue.assignedTo.push(person);
     await saveDB();
     hideSpinner();
+    buildAssigneeFilter();
     renderDashboard();
-  } catch(e) { hideSpinner(); alert('Failed: '+e.message); }
+  } catch(e){ hideSpinner(); alert('Failed: '+e.message); }
 }
 
-async function toggleDone(id) {
+// ── Done modal ─────────────────────────────────────────────────────────────
+function openDoneModal(id) {
+  const issue = db.issues.find(i=>i.id===id);
+  if(issue?.done) { toggleDone(id, ''); return; } // untoggle if already done
+  pendingDoneId = id;
+  document.getElementById('done-note').value = '';
+  document.getElementById('done-modal').classList.add('visible');
+}
+function closeDoneModal(){ document.getElementById('done-modal').classList.remove('visible'); pendingDoneId=null; }
+async function confirmDone(){
+  const note = document.getElementById('done-note').value.trim();
+  closeDoneModal();
+  await toggleDone(pendingDoneId, note);
+}
+async function toggleDone(id, note) {
   showSpinner('Updating...');
   try {
     await loadDB();
     const issue = db.issues.find(i=>i.id===id);
-    if(issue) issue.done = !issue.done;
+    if(issue){ issue.done = !issue.done; if(note) issue.completionNote = note; }
     await saveDB();
     hideSpinner();
     renderDashboard();
-  } catch(e) { hideSpinner(); alert('Failed: '+e.message); }
+  } catch(e){ hideSpinner(); alert('Failed: '+e.message); }
 }
 
+// ── Send assignments ───────────────────────────────────────────────────────
 function sendAssignments() {
-  const open = db.issues.filter(i => !i.done && !i.allClear && i.assignedTo);
-  if(open.length === 0) { alert('No assigned issues to send.'); return; }
-
+  const open = db.issues.filter(i=>!i.done&&!i.allClear&&i.assignedTo?.length>0);
+  if(open.length===0){ alert('No assigned issues to send.'); return; }
   const byPerson = {};
-  open.forEach(i => {
-    if(!byPerson[i.assignedTo]) byPerson[i.assignedTo] = [];
-    byPerson[i.assignedTo].push(i);
-  });
-
+  open.forEach(i => (i.assignedTo||[]).forEach(p => {
+    if(!byPerson[p]) byPerson[p]=[];
+    byPerson[p].push(i);
+  }));
   Object.entries(byPerson).forEach(([person, issues]) => {
-    let body = `Hi ${person},\n\nHere are your open assignments for Lawn & Range:\n\n`;
+    let body = `Hi ${person},\n\nYour open assignments for Lawn & Range:\n\n`;
     const byRoom = {};
-    issues.forEach(i => {
-      const key = `${i.area} Room ${i.room}`;
-      if(!byRoom[key]) byRoom[key] = [];
-      byRoom[key].push(i);
-    });
+    issues.forEach(i => { const k=`${i.area} Room ${i.room}`; if(!byRoom[k]) byRoom[k]=[]; byRoom[k].push(i); });
     Object.entries(byRoom).sort().forEach(([room, roomIssues]) => {
       body += `${room}:\n`;
-      roomIssues.forEach(i => {
-        body += `  - ${i.cat} — ${i.item}`;
-        if(i.note) body += `: ${i.note}`;
-        body += '\n';
-      });
+      roomIssues.forEach(i => { body += `  - ${i.cat} — ${i.item}`; if(i.note) body += `: ${i.note}`; body += '\n'; });
       body += '\n';
     });
     body += 'Please mark items as done in the app when complete.\n\nThank you,\nUVA Facilities Management';
-
-    // Find supervisor email
-    let email = 'gre4se@virginia.edu';
-    Object.values(SUPERVISORS).flat().forEach(s => { if(s.name===person) email=s.email; });
-
-    const subject = `Lawn & Range — Your Open Assignments (${issues.length} items)`;
+    const email = INSPECTOR_EMAILS[person]||'gre4se@virginia.edu';
+    const subject = `Lawn & Range — Your Assignments (${issues.length} items)`;
     window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
   });
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────
-buildRoomChips(0);
-loadDB().then(() => buildRoomChips(activeCat));
+// ── Export Excel ───────────────────────────────────────────────────────────
+function exportExcel() {
+  const issues = db.issues.filter(i=>!i.allClear);
+  let csv = 'Area,Room,Trade,Category,Issue,Notes,Inspector,Date,Assigned To,Status,Completion Note\n';
+  const areaOrder = ['West Lawn','West Range','East Lawn','East Range'];
+  const sorted = [...issues].sort((a,b) => {
+    const ao = areaOrder.indexOf(a.area)-areaOrder.indexOf(b.area);
+    if(ao!==0) return ao;
+    const ar = parseInt(a.room)||999, br = parseInt(b.room)||999;
+    if(ar!==br) return ar-br;
+    return a.trade.localeCompare(b.trade);
+  });
+  sorted.forEach(i => {
+    csv += [
+      i.area, i.room, i.trade, i.cat, i.item,
+      '"'+(i.note||'').replace(/"/g,'""')+'"',
+      i.inspector, i.timestamp,
+      '"'+(i.assignedTo||[]).join(', ').replace(/"/g,'""')+'"',
+      i.done?'Done':'Open',
+      '"'+(i.completionNote||'').replace(/"/g,'""')+'"'
+    ].join(',') + '\n';
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download = `LawnRange_Inspections_${new Date().toLocaleDateString('en-US').replace(/\//g,'-')}.csv`;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+loadDB().then(() => buildRoomChips(0));
 </script>
 </body>
 </html>
