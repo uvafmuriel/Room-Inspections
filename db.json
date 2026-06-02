@@ -123,7 +123,7 @@
       "cat": "Paint & Plaster",
       "item": "Paint door",
       "note": "",
-      "done": false,
+      "done": true,
       "allClear": false,
       "assignedTo": [
         "Josh"
