@@ -730,6 +730,10 @@ function renderDashboard() {
             <textarea id="comp-note-${issue.id}" rows="2" placeholder="Add completion note…"
               style="width:100%;padding:8px 10px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:none;"
               oninput="saveCompNote('${issue.id}',this.value)">${issue.completionNote||''}</textarea>
+            <button onclick="event.stopPropagation();deleteIssue('${issue.id}')"
+              style="margin-top:6px;font-size:11px;padding:4px 10px;border-radius:99px;border:1.5px solid var(--accent);background:var(--accent-light);font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--accent-text)">
+              🗑 Delete this issue
+            </button>
           </div>
           ${issue.completionNote?`<div class="issue-row-note" style="color:var(--green-text);margin-top:4px">✓ ${issue.completionNote}</div>`:''}
         </div>
@@ -747,8 +751,7 @@ function renderDashboard() {
             onclick="event.stopPropagation();toggleDone('${issue.id}','')">
             ${issue.done?'✓ Done':'Mark done'}
           </button>
-          <button style="font-size:11px;padding:5px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--accent-text)"
-            onclick="event.stopPropagation();deleteIssue('${issue.id}')">🗑 Delete</button>
+
         </div>`;
       body.appendChild(row);
     });
