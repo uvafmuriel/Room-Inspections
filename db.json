@@ -16,23 +16,6 @@
       "assignedTrade": "Carpentry"
     },
     {
-      "id": "1780421244331-045879uvvzx5-23gcmyf6hlx",
-      "room": "7",
-      "area": "West Lawn",
-      "trade": "Carpentry",
-      "inspector": "Mike",
-      "timestamp": "6/2/2026, 1:27 PM",
-      "cat": "Furniture",
-      "item": "Straight-backed chair worn/replace",
-      "note": "",
-      "done": true,
-      "allClear": false,
-      "assignedTo": [
-        "Lex"
-      ],
-      "completionNote": ""
-    },
-    {
       "id": "1780421244331-jufb01fk78-qnitbaljwl",
       "room": "7",
       "area": "West Lawn",
