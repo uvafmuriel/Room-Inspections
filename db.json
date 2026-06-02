@@ -33,23 +33,6 @@
       "assignedTrade": "Carpentry"
     },
     {
-      "id": "1780419390847-uyskmc66fa",
-      "room": "1",
-      "area": "West Lawn",
-      "trade": "Carpentry",
-      "inspector": "Mike",
-      "timestamp": "6/2/2026, 12:56 PM",
-      "cat": "Paint & Plaster",
-      "item": "Paint door",
-      "note": "",
-      "done": true,
-      "allClear": false,
-      "assignedTo": [
-        "Josh"
-      ],
-      "assignedTrade": "Carpentry"
-    },
-    {
       "id": "1780420476841-9gsorkwn7uq",
       "room": "3",
       "area": "West Lawn",
