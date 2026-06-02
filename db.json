@@ -72,7 +72,7 @@
       "cat": "Doors",
       "item": "Chain lock missing",
       "note": "sadfgsdrg",
-      "done": false,
+      "done": true,
       "allClear": false,
       "assignedTo": [
         "Josh"
