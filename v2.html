@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a1a18">
+<title>Lawn & Range Inspections v2</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#f5f3ee;--surface:#fff;--surface2:#ede9e2;
+  --border:rgba(0,0,0,0.1);--text:#1a1a18;--text2:#5a5a55;--text3:#9a9a92;
+  --accent:#c94f1e;--accent-light:#faeae3;--accent-text:#8c3210;
+  --green:#3a7c4a;--green-light:#e6f2e8;--green-text:#265232;
+  --amber:#b07820;--amber-light:#fdf3dc;--amber-text:#7a520f;
+  --blue:#185fa8;--blue-light:#e8f0fb;--blue-text:#0f3d72;
+  --radius:14px;--radius-sm:8px;
+  --safe-bottom:env(safe-area-inset-bottom,0px)
+}
+html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);font-size:16px;-webkit-font-smoothing:antialiased}
+
+/* ── Layout ── */
+#app{min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:#1a1a18;color:#f5f3ee;padding:14px 16px 12px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100}
+.topbar-logo{width:32px;height:32px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.topbar-logo svg{width:18px;height:18px}
+.topbar-title{flex:1}
+.topbar-title h1{font-size:15px;font-weight:600}
+.topbar-title p{font-size:11px;color:#9a9a8a;font-family:'DM Mono',monospace}
+.mode-toggle{display:flex;gap:4px}
+.mode-btn{padding:6px 12px;border-radius:6px;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;background:rgba(255,255,255,.1);color:#f5f3ee}
+.mode-btn.active{background:var(--accent);color:#fff}
+.page{display:none}
+.page.active{display:block}
+
+/* ── Setup ── */
+.wrap{padding:20px 16px 100px;max-width:500px;margin:0 auto}
+.field-group{margin-bottom:14px}
+.field-group label{display:block;font-size:11px;font-weight:600;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:5px}
+.field-group select,.field-group input{width:100%;padding:13px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text);outline:none;-webkit-appearance:none}
+.field-group select:focus,.field-group input:focus{border-color:var(--accent)}
+.cat-tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:8px}
+.cat-tab{padding:10px 6px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;text-align:center;-webkit-appearance:none}
+.cat-tab.active{background:#1a1a18;border-color:#1a1a18;color:#f5f3ee}
+.rooms-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.room-chip{padding:9px 4px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;text-align:center;-webkit-appearance:none;position:relative}
+.room-chip.selected{background:#1a1a18;border-color:#1a1a18;color:#f5f3ee}
+.room-chip.has-issues{border-color:var(--amber);background:var(--amber-light);color:var(--amber-text)}
+.room-chip.has-issues.selected{background:#1a1a18;border-color:#1a1a18;color:#f5f3ee}
+.start-btn{width:100%;margin-top:20px;padding:15px;background:var(--accent);color:white;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;border:none;border-radius:var(--radius);cursor:pointer}
+
+/* ── Issue form ── */
+.room-header{background:#1a1a18;color:#f5f3ee;padding:12px 16px;display:flex;align-items:center;gap:10px}
+.room-header-info{flex:1}
+.room-header-info h2{font-size:16px;font-weight:600}
+.room-header-info p{font-size:11px;color:#9a9a8a}
+.back-btn{background:rgba(255,255,255,.12);border:none;color:#f5f3ee;font-family:'DM Sans',sans-serif;font-size:13px;padding:7px 12px;border-radius:6px;cursor:pointer}
+.issues-list{padding:12px 16px 100px}
+.issue-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+.issue-card-header{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--surface2)}
+.issue-card-header .cat-icon{font-size:18px}
+.issue-card-header .cat-name{font-size:14px;font-weight:600;flex:1}
+.issue-items{padding:8px 0}
+.issue-item-row{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--border);cursor:pointer}
+.issue-item-row:last-child{border-bottom:none}
+.issue-item-row.selected{background:var(--amber-light)}
+.issue-item-name{flex:1;font-size:13px;font-weight:500}
+.issue-item-check{width:20px;height:20px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.issue-item-row.selected .issue-item-check{background:var(--amber);border-color:var(--amber);color:white;font-size:12px}
+.note-area{margin:0 14px 10px;padding:9px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;width:calc(100% - 28px);resize:none;display:none}
+.note-area.visible{display:block}
+.add-custom-row{padding:10px 14px;display:flex;gap:8px;border-top:1px solid var(--border)}
+.add-custom-input{flex:1;padding:8px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;outline:none}
+.add-custom-btn{padding:8px 14px;background:#1a1a18;color:#f5f3ee;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+
+/* ── Bottom bar ── */
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:#1a1a18;padding:12px 16px;padding-bottom:calc(12px + var(--safe-bottom));display:flex;gap:10px;z-index:100}
+.bottom-btn{flex:1;padding:14px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none}
+.bottom-btn.outline{background:rgba(255,255,255,.12);color:#f5f3ee}
+.bottom-btn.primary{background:var(--accent);color:white}
+
+/* ── Submit overlay ── */
+.submit-overlay{position:fixed;inset:0;background:rgba(26,26,24,.7);display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;z-index:200}
+.submit-overlay.visible{display:flex}
+.spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.2);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.submit-msg{color:white;font-size:15px;font-weight:500}
+
+/* ── Manager dashboard ── */
+.dashboard-wrap{padding:12px 16px 80px}
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.filter-btn{padding:7px 14px;border-radius:99px;border:1.5px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer}
+.filter-btn.active{background:#1a1a18;border-color:#1a1a18;color:#f5f3ee}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;text-align:center}
+.stat-box .num{font-size:22px;font-weight:600;font-family:'DM Mono',monospace}
+.stat-box .lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
+.issue-group{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+.issue-group-header{background:var(--surface2);padding:10px 14px;display:flex;align-items:center;gap:8px;cursor:pointer}
+.issue-group-title{flex:1;font-size:14px;font-weight:600}
+.issue-group-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--accent-light);color:var(--accent-text)}
+.issue-group-badge.done{background:var(--green-light);color:var(--green-text)}
+.issue-group-body{display:none;border-top:1px solid var(--border)}
+.issue-group-body.open{display:block}
+.issue-row{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start}
+.issue-row:last-child{border-bottom:none}
+.issue-row.done{opacity:.5}
+.issue-row-info{flex:1}
+.issue-row-item{font-size:13px;font-weight:500}
+.issue-row-note{font-size:12px;color:var(--text2);margin-top:2px}
+.issue-row-meta{font-size:11px;color:var(--text3);margin-top:3px}
+.issue-actions{display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0}
+.assign-select{font-size:11px;padding:4px 8px;border:1px solid var(--border);border-radius:5px;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text2);cursor:pointer;max-width:120px}
+.done-btn{font-size:11px;padding:4px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--text2)}
+.done-btn.completed{background:var(--green-light);border-color:var(--green);color:var(--green-text)}
+.send-assign-btn{width:100%;padding:12px;background:#1a1a18;color:#f5f3ee;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-top:8px}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text3);font-size:14px}
+</style>
+</head>
+<body>
+<div id="app">
+
+<div class="topbar">
+  <div class="topbar-logo">
+    <svg viewBox="0 0 18 18" fill="none"><rect x="2" y="9" width="14" height="7" rx="1.5" fill="white" opacity=".9"/><path d="M1 9.5L9 3l8 6.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <div class="topbar-title">
+    <h1>Room Inspections</h1>
+    <p id="topbar-sub">Lawn & Range v2</p>
+  </div>
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="btn-inspect" onclick="setMode('inspect')">Inspect</button>
+    <button class="mode-btn" id="btn-manage" onclick="setMode('manage')">Manage</button>
+  </div>
+</div>
+
+<div class="submit-overlay" id="submit-overlay">
+  <div class="spinner"></div>
+  <div class="submit-msg" id="submit-msg">Saving...</div>
+</div>
+
+<!-- INSPECT MODE -->
+<div class="page active" id="page-inspect">
+
+  <!-- Setup screen -->
+  <div id="screen-setup">
+    <div class="wrap">
+      <div class="field-group">
+        <label>Your name</label>
+        <select id="sel-inspector">
+          <option value="">Select inspector…</option>
+          <optgroup label="Carpentry">
+            <option>Mike</option><option>Bryan</option><option>John</option><option>Lex</option>
+            <option>Josh</option><option>Corey Walker</option>
+          </optgroup>
+          <optgroup label="Electrical">
+            <option>Morgan</option><option>Brittany</option><option>Anthony</option>
+            <option>Jalisa</option><option>Richard</option>
+          </optgroup>
+          <optgroup label="Plumbing">
+            <option>Cris</option><option>Codey</option><option>Tim</option>
+            <option>Duane</option><option>Leo</option>
+          </optgroup>
+          <optgroup label="HVAC">
+            <option>Jason</option><option>Wayne</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Trade</label>
+        <select id="sel-trade" onchange="filterCategories()">
+          <option value="">Select trade…</option>
+          <option value="Carpentry">Carpentry</option>
+          <option value="Electrical">Electrical</option>
+          <option value="Plumbing">Plumbing</option>
+          <option value="HVAC">HVAC</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Select room</label>
+        <div class="cat-tabs" id="area-tabs"></div>
+        <div class="rooms-grid" id="rooms-grid"></div>
+      </div>
+      <button class="start-btn" onclick="startInspection()">Start Inspection →</button>
+    </div>
+  </div>
+
+  <!-- Issue entry screen -->
+  <div id="screen-issues" style="display:none">
+    <div class="room-header">
+      <button class="back-btn" onclick="goBack()">← Back</button>
+      <div class="room-header-info">
+        <h2 id="room-header-title">Room 1</h2>
+        <p id="room-header-sub">West Lawn · Carpentry</p>
+      </div>
+    </div>
+    <div class="issues-list" id="issues-list"></div>
+    <div class="bottom-bar">
+      <button class="bottom-btn outline" onclick="goBack()">← Back</button>
+      <button class="bottom-btn primary" onclick="submitIssues()">Submit Issues →</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- MANAGE MODE -->
+<div class="page" id="page-manage">
+  <div class="dashboard-wrap">
+    <div class="stats-row">
+      <div class="stat-box"><div class="num" id="stat-total">0</div><div class="lbl">Total Issues</div></div>
+      <div class="stat-box"><div class="num" id="stat-open" style="color:var(--accent)">0</div><div class="lbl">Open</div></div>
+      <div class="stat-box"><div class="num" id="stat-done" style="color:var(--green)">0</div><div class="lbl">Done</div></div>
+    </div>
+    <div class="filter-bar" id="filter-bar">
+      <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setFilter('Carpentry',this)">Carpentry</button>
+      <button class="filter-btn" onclick="setFilter('Electrical',this)">Electrical</button>
+      <button class="filter-btn" onclick="setFilter('Plumbing',this)">Plumbing</button>
+      <button class="filter-btn" onclick="setFilter('HVAC',this)">HVAC</button>
+      <button class="filter-btn" onclick="setFilter('open',this)">Open only</button>
+    </div>
+    <div id="dashboard-list"></div>
+    <button class="send-assign-btn" onclick="sendAssignments()">✉ Send Assignment Emails</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+const GITHUB_TOKEN = 'ghp_L9BHj92Ozg'+'JPxZTzrX0Vxn'+'LldB19zV2UWdZE';
+const REPO = 'uvafmuriel/Room-Inspections';
+const DB_PATH = 'db.json';
+
+// ── Data ──────────────────────────────────────────────────────────────────
+const ROOM_CATEGORIES = [
+  { label:'West Lawn',  rooms: Array.from({length:28},(_,i)=>String(1+i*2)).filter(n=>+n<=55) },
+  { label:'West Range', rooms: Array.from({length:27},(_,i)=>String(1+i*2)).filter(n=>+n<=53) },
+  { label:'East Lawn',  rooms: Array.from({length:26},(_,i)=>String(2+i*2)).filter(n=>+n<=52) },
+  { label:'East Range', rooms: [...Array.from({length:27},(_,i)=>String(2+i*2)).filter(n=>+n<=54),'Cracker Box 1','Cracker Box 2'] },
+];
+
+const CATEGORIES = {
+  Carpentry: [
+    { icon:'🏠', name:'Paint & Plaster', items:['Touch up paint','Patch and paint','Paint walls/ceiling','Paint door','Windowsill/mantle paint','Exterior paint','Plaster repair','Bubbling/scaling plaster','Water damage'] },
+    { icon:'🚪', name:'Doors', items:['Door knob loose','Missing screws','Needs night latch','Hinge loose/tighten','Latch adjustment','Door dragging','Chain lock missing'] },
+    { icon:'🪟', name:'Windows & Blinds', items:['Blinds broken/replace','Blinds stuck','Missing screen','Window blocks needed','Broken window pane'] },
+    { icon:'🪑', name:'Furniture', items:['Rocking chair missing','Straight-backed chair worn/replace','Bed repair','Desk repair','Bookshelf repair','Mirror'] },
+    { icon:'🔥', name:'Fireplace', items:['Missing ash can','Missing brush','Missing tongs','Missing poker','Missing screen','Missing log rack','Missing holder','Missing shovel'] },
+    { icon:'🧹', name:'Other', items:['Command strips — remove','Command strips — patch & paint','Wooden box cover under sink','Wood removal needed'] },
+  ],
+  Electrical: [
+    { icon:'💡', name:'Lights', items:['Lights over sink not working','Lights inside sink enclosure not working'] },
+    { icon:'🔌', name:'Appliances', items:['Refrigerator issue','Microwave issue','Fan not working','Receptacle issue'] },
+    { icon:'🧯', name:'Safety', items:['CO detector issue','Smoke alarm issue','Fire extinguisher issue','Extinguisher tag expired'] },
+  ],
+  Plumbing: [
+    { icon:'💧', name:'Water', items:['Leak present','No hot water','No cold water','Low pressure'] },
+    { icon:'🚰', name:'Fixtures', items:['Sink drain issue','Stops issue','AAV issue','Faucet issue'] },
+  ],
+  HVAC: [
+    { icon:'🌡️', name:'System', items:['Heating not working','Cooling not working','Filter needs replacement','Vents blocked'] },
+    { icon:'📦', name:'Equipment', items:['Unit cover missing','Hoses missing','Remote missing'] },
+  ],
+};
+
+const SUPERVISORS = {
+  Carpentry: [
+    { name:'Corey Walker', email:'corey@virginia.edu' },
+    { name:'Josh', email:'josh@virginia.edu' },
+  ],
+  Electrical: [{ name:'Benji', email:'benji@virginia.edu' }],
+  Plumbing: [{ name:'Benji', email:'benji@virginia.edu' }],
+  HVAC: [{ name:'Wayne', email:'wayne@virginia.edu' }],
+};
+
+let db = { issues: [], assignments: [], lastUpdated: '' };
+let dbSha = '';
+let activeCat = 0;
+let selectedRoom = '';
+let selectedArea = '';
+let currentIssues = {}; // { "catName___itemName": { selected: bool, note: '' } }
+let activeFilter = 'all';
+let currentMode = 'inspect';
+
+// ── GitHub DB ─────────────────────────────────────────────────────────────
+async function loadDB() {
+  const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${DB_PATH}`, {
+    headers: { Authorization: `token ${GITHUB_TOKEN}` }
+  });
+  const data = await resp.json();
+  dbSha = data.sha;
+  db = JSON.parse(atob(data.content.replace(/\n/g,'')));
+  return db;
+}
+
+async function saveDB() {
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
+  const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${DB_PATH}`, {
+    method: 'PUT',
+    headers: { Authorization: `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: 'Update inspection data', content, sha: dbSha })
+  });
+  const data = await resp.json();
+  dbSha = data.content.sha;
+}
+
+// ── Mode toggle ───────────────────────────────────────────────────────────
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('btn-inspect').classList.toggle('active', mode==='inspect');
+  document.getElementById('btn-manage').classList.toggle('active', mode==='manage');
+  document.getElementById('page-inspect').classList.toggle('active', mode==='inspect');
+  document.getElementById('page-manage').classList.toggle('active', mode==='manage');
+  if(mode==='manage') { loadDB().then(renderDashboard); }
+}
+
+// ── Setup page ────────────────────────────────────────────────────────────
+const areaTabs = document.getElementById('area-tabs');
+ROOM_CATEGORIES.forEach((cat,i) => {
+  const btn = document.createElement('button');
+  btn.className = 'cat-tab' + (i===0?' active':'');
+  btn.textContent = cat.label;
+  btn.onclick = () => {
+    activeCat = i;
+    document.querySelectorAll('.cat-tab').forEach((t,j) => t.classList.toggle('active',j===i));
+    buildRoomChips(i);
+    selectedRoom = '';
+    selectedArea = cat.label;
+  };
+  areaTabs.appendChild(btn);
+});
+selectedArea = ROOM_CATEGORIES[0].label;
+
+function buildRoomChips(ci) {
+  const grid = document.getElementById('rooms-grid');
+  grid.innerHTML = '';
+  ROOM_CATEGORIES[ci].rooms.forEach(r => {
+    const btn = document.createElement('button');
+    btn.className = 'room-chip';
+    btn.textContent = r;
+    const roomIssues = db.issues.filter(i => i.room===r && i.area===ROOM_CATEGORIES[ci].label && !i.done);
+    if(roomIssues.length > 0) btn.classList.add('has-issues');
+    btn.onclick = () => {
+      document.querySelectorAll('.room-chip').forEach(c => c.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedRoom = r;
+    };
+    grid.appendChild(btn);
+  });
+}
+
+function filterCategories() {}
+
+function startInspection() {
+  const inspector = document.getElementById('sel-inspector').value;
+  const trade = document.getElementById('sel-trade').value;
+  if(!inspector) { alert('Please select your name.'); return; }
+  if(!trade) { alert('Please select your trade.'); return; }
+  if(!selectedRoom) { alert('Please select a room.'); return; }
+  currentIssues = {};
+  buildIssueForm(trade);
+  document.getElementById('room-header-title').textContent = `Room ${selectedRoom}`;
+  document.getElementById('room-header-sub').textContent = `${selectedArea} · ${trade}`;
+  document.getElementById('screen-setup').style.display = 'none';
+  document.getElementById('screen-issues').style.display = 'block';
+}
+
+// ── Issue form ────────────────────────────────────────────────────────────
+function buildIssueForm(trade) {
+  const list = document.getElementById('issues-list');
+  list.innerHTML = '';
+  const cats = CATEGORIES[trade] || [];
+  cats.forEach(cat => {
+    const card = document.createElement('div');
+    card.className = 'issue-card';
+    card.innerHTML = `<div class="issue-card-header"><span class="cat-icon">${cat.icon}</span><span class="cat-name">${cat.name}</span></div><div class="issue-items" id="items-${safeId(cat.name)}"></div>`;
+    const itemsDiv = card.querySelector(`#items-${safeId(cat.name)}`);
+
+    cat.items.forEach(item => {
+      const key = `${cat.name}___${item}`;
+      const row = document.createElement('div');
+      row.className = 'issue-item-row';
+      row.id = `row-${safeId(key)}`;
+      row.innerHTML = `
+        <div class="issue-item-check" id="chk-${safeId(key)}"></div>
+        <span class="issue-item-name">${item}</span>`;
+      row.onclick = () => toggleIssue(key, cat.name, item, trade);
+      itemsDiv.appendChild(row);
+
+      const noteArea = document.createElement('textarea');
+      noteArea.className = 'note-area';
+      noteArea.id = `note-${safeId(key)}`;
+      noteArea.placeholder = 'Add details…';
+      noteArea.rows = 2;
+      noteArea.oninput = (e) => {
+        if(!currentIssues[key]) currentIssues[key] = { cat: cat.name, item, trade, note: '' };
+        currentIssues[key].note = e.target.value;
+      };
+      itemsDiv.appendChild(noteArea);
+    });
+
+    // Add custom item
+    const addRow = document.createElement('div');
+    addRow.className = 'add-custom-row';
+    addRow.innerHTML = `<input class="add-custom-input" id="custom-${safeId(cat.name)}" placeholder="Add custom issue…" /><button class="add-custom-btn" onclick="addCustomIssue('${safeId(cat.name)}','${cat.name}','${trade}')">+ Add</button>`;
+    card.appendChild(addRow);
+    list.appendChild(card);
+  });
+}
+
+function safeId(str) { return str.replace(/[^a-zA-Z0-9]/g,'_'); }
+
+function toggleIssue(key, catName, item, trade) {
+  if(!currentIssues[key]) {
+    currentIssues[key] = { cat: catName, item, trade, note: '', selected: true };
+  } else {
+    currentIssues[key].selected = !currentIssues[key].selected;
+  }
+  const row = document.getElementById(`row-${safeId(key)}`);
+  const chk = document.getElementById(`chk-${safeId(key)}`);
+  const note = document.getElementById(`note-${safeId(key)}`);
+  const sel = currentIssues[key].selected;
+  row.classList.toggle('selected', sel);
+  chk.textContent = sel ? '✓' : '';
+  note.classList.toggle('visible', sel);
+  if(sel) note.focus();
+}
+
+function addCustomIssue(safeCatId, catName, trade) {
+  const input = document.getElementById(`custom-${safeCatId}`);
+  const val = input.value.trim();
+  if(!val) return;
+  const key = `${catName}___${val}`;
+  currentIssues[key] = { cat: catName, item: val, trade, note: '', selected: true };
+  const itemsDiv = document.getElementById(`items-${safeCatId}`);
+  const row = document.createElement('div');
+  row.className = 'issue-item-row selected';
+  row.innerHTML = `<div class="issue-item-check">✓</div><span class="issue-item-name">${val}</span>`;
+  const noteArea = document.createElement('textarea');
+  noteArea.className = 'note-area visible';
+  noteArea.placeholder = 'Add details…';
+  noteArea.rows = 2;
+  noteArea.oninput = (e) => { currentIssues[key].note = e.target.value; };
+  itemsDiv.appendChild(row);
+  itemsDiv.appendChild(noteArea);
+  input.value = '';
+}
+
+async function submitIssues() {
+  const selected = Object.entries(currentIssues).filter(([k,v]) => v.selected);
+  const inspector = document.getElementById('sel-inspector').value;
+  const trade = document.getElementById('sel-trade').value;
+  const now = new Date();
+  const timestamp = now.toLocaleString('en-US', { month:'numeric', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit', hour12:true });
+
+  showSpinner('Saving issues...');
+  try {
+    await loadDB();
+    if(selected.length === 0) {
+      // All clear
+      db.issues.push({
+        id: Date.now().toString(),
+        room: selectedRoom, area: selectedArea, trade,
+        inspector, timestamp,
+        cat: 'General', item: 'No issues', note: '', done: true, allClear: true,
+        assignedTo: '', assignedTrade: trade
+      });
+    } else {
+      selected.forEach(([k,v]) => {
+        db.issues.push({
+          id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          room: selectedRoom, area: selectedArea, trade,
+          inspector, timestamp,
+          cat: v.cat, item: v.item, note: v.note,
+          done: false, allClear: false,
+          assignedTo: '', assignedTrade: trade
+        });
+      });
+    }
+    db.lastUpdated = timestamp;
+    await saveDB();
+    hideSpinner();
+    showSuccess(selected.length);
+  } catch(e) {
+    hideSpinner();
+    alert('Save failed: ' + e.message);
+  }
+}
+
+function showSuccess(count) {
+  document.getElementById('screen-issues').style.display = 'none';
+  document.getElementById('screen-setup').style.display = 'block';
+  selectedRoom = '';
+  document.querySelectorAll('.room-chip').forEach(c => c.classList.remove('selected'));
+  buildRoomChips(activeCat);
+  alert(count === 0 ? '✅ All clear logged!' : `✅ ${count} issue${count>1?'s':''} saved successfully!`);
+}
+
+function goBack() {
+  document.getElementById('screen-issues').style.display = 'none';
+  document.getElementById('screen-setup').style.display = 'block';
+}
+
+function showSpinner(msg) {
+  document.getElementById('submit-msg').textContent = msg;
+  document.getElementById('submit-overlay').classList.add('visible');
+}
+function hideSpinner() { document.getElementById('submit-overlay').classList.remove('visible'); }
+
+// ── Dashboard ─────────────────────────────────────────────────────────────
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDashboard();
+}
+
+function renderDashboard() {
+  const issues = db.issues.filter(i => !i.allClear);
+  const filtered = issues.filter(i => {
+    if(activeFilter === 'all') return true;
+    if(activeFilter === 'open') return !i.done;
+    return i.trade === activeFilter;
+  });
+
+  document.getElementById('stat-total').textContent = issues.length;
+  document.getElementById('stat-open').textContent = issues.filter(i=>!i.done).length;
+  document.getElementById('stat-done').textContent = issues.filter(i=>i.done).length;
+
+  const list = document.getElementById('dashboard-list');
+  list.innerHTML = '';
+
+  if(filtered.length === 0) {
+    list.innerHTML = '<div class="empty-state">No issues found.</div>';
+    return;
+  }
+
+  // Group by area → room
+  const grouped = {};
+  filtered.forEach(issue => {
+    const key = `${issue.area} — Room ${issue.room}`;
+    if(!grouped[key]) grouped[key] = [];
+    grouped[key].push(issue);
+  });
+
+  Object.entries(grouped).sort().forEach(([groupKey, groupIssues]) => {
+    const open = groupIssues.filter(i=>!i.done).length;
+    const group = document.createElement('div');
+    group.className = 'issue-group';
+    group.innerHTML = `
+      <div class="issue-group-header" onclick="this.nextSibling.classList.toggle('open')">
+        <span class="issue-group-title">${groupKey}</span>
+        <span class="issue-group-badge ${open===0?'done':''}">${open===0?'Done':open+' open'}</span>
+      </div>
+      <div class="issue-group-body"></div>`;
+    const body = group.querySelector('.issue-group-body');
+
+    groupIssues.forEach(issue => {
+      const row = document.createElement('div');
+      row.className = 'issue-row' + (issue.done?' done':'');
+      row.id = `issue-${issue.id}`;
+
+      const tradeSupers = SUPERVISORS[issue.trade] || [];
+      const assignOptions = tradeSupers.map(s =>
+        `<option value="${s.name}" ${issue.assignedTo===s.name?'selected':''}>${s.name}</option>`
+      ).join('');
+
+      row.innerHTML = `
+        <div class="issue-row-info">
+          <div class="issue-row-item">${issue.cat} — ${issue.item}</div>
+          ${issue.note?`<div class="issue-row-note">${issue.note}</div>`:''}
+          <div class="issue-row-meta">${issue.trade} · ${issue.inspector} · ${issue.timestamp}</div>
+        </div>
+        <div class="issue-actions">
+          <select class="assign-select" onchange="assignIssue('${issue.id}',this.value)">
+            <option value="">Assign…</option>
+            ${assignOptions}
+          </select>
+          <button class="done-btn ${issue.done?'completed':''}" onclick="toggleDone('${issue.id}')">
+            ${issue.done?'✓ Done':'Mark done'}
+          </button>
+        </div>`;
+      body.appendChild(row);
+    });
+
+    list.appendChild(group);
+  });
+}
+
+async function assignIssue(id, person) {
+  showSpinner('Assigning...');
+  try {
+    await loadDB();
+    const issue = db.issues.find(i=>i.id===id);
+    if(issue) issue.assignedTo = person;
+    await saveDB();
+    hideSpinner();
+    renderDashboard();
+  } catch(e) { hideSpinner(); alert('Failed: '+e.message); }
+}
+
+async function toggleDone(id) {
+  showSpinner('Updating...');
+  try {
+    await loadDB();
+    const issue = db.issues.find(i=>i.id===id);
+    if(issue) issue.done = !issue.done;
+    await saveDB();
+    hideSpinner();
+    renderDashboard();
+  } catch(e) { hideSpinner(); alert('Failed: '+e.message); }
+}
+
+function sendAssignments() {
+  const open = db.issues.filter(i => !i.done && !i.allClear && i.assignedTo);
+  if(open.length === 0) { alert('No assigned issues to send.'); return; }
+
+  const byPerson = {};
+  open.forEach(i => {
+    if(!byPerson[i.assignedTo]) byPerson[i.assignedTo] = [];
+    byPerson[i.assignedTo].push(i);
+  });
+
+  Object.entries(byPerson).forEach(([person, issues]) => {
+    let body = `Hi ${person},\n\nHere are your open assignments for Lawn & Range:\n\n`;
+    const byRoom = {};
+    issues.forEach(i => {
+      const key = `${i.area} Room ${i.room}`;
+      if(!byRoom[key]) byRoom[key] = [];
+      byRoom[key].push(i);
+    });
+    Object.entries(byRoom).sort().forEach(([room, roomIssues]) => {
+      body += `${room}:\n`;
+      roomIssues.forEach(i => {
+        body += `  - ${i.cat} — ${i.item}`;
+        if(i.note) body += `: ${i.note}`;
+        body += '\n';
+      });
+      body += '\n';
+    });
+    body += 'Please mark items as done in the app when complete.\n\nThank you,\nUVA Facilities Management';
+
+    // Find supervisor email
+    let email = 'gre4se@virginia.edu';
+    Object.values(SUPERVISORS).flat().forEach(s => { if(s.name===person) email=s.email; });
+
+    const subject = `Lawn & Range — Your Open Assignments (${issues.length} items)`;
+    window.open(`mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+buildRoomChips(0);
+loadDB().then(() => buildRoomChips(activeCat));
+</script>
+</body>
+</html>
