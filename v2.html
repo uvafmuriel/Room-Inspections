@@ -298,7 +298,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 
     <!-- Hidden reset - triple tap the version text to reveal -->
     <div style="text-align:center;margin-top:40px;padding-bottom:20px">
-      <span id="reset-trigger" style="font-size:11px;color:var(--border);user-select:none;cursor:default" 
+      <span id="reset-trigger" style="font-size:11px;color:var(--text3);user-select:none;cursor:default" 
         onclick="handleResetTap()">v2.0</span>
     </div>
     <div id="reset-panel" style="display:none;background:var(--accent-light);border:2px solid var(--accent);border-radius:var(--radius);padding:16px;margin-top:8px">
@@ -575,15 +575,25 @@ async function submitIssues() {
   try {
     await loadDB();
     const generalNote = document.getElementById('general-note')?.value.trim() || '';
+    // If editing, remove old issues first and mark edit
+    if(window._editContext) {
+      const {room:eRoom, area:eArea, trade:eTrade} = window._editContext;
+      const editedBy = inspector;
+      const editTime = timestamp;
+      db.issues = db.issues.filter(i => !(i.room===eRoom && i.area===eArea && i.trade===eTrade && !i.allClear));
+      window._editContext = null;
+    }
     if(selected.length===0) {
       db.issues.push({ id:Date.now().toString(), room:selectedRoom, area:selectedArea, trade,
         inspector, timestamp, cat:'General', item:'No issues', note:generalNote, done:true, allClear:true, assignedTo:[] });
     } else {
       selected.forEach(([,v]) => {
+        const wasEdited = window._editContext !== undefined;
         db.issues.push({ id:`${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`,
           room:selectedRoom, area:selectedArea, trade, inspector, timestamp,
           cat:v.cat, item:v.item, note:v.note, done:false, allClear:false,
-          assignedTo:[], completionNote:'', generalNote });
+          assignedTo:[], completionNote:'', generalNote,
+          editedBy: wasEdited ? inspector : '', editedAt: wasEdited ? timestamp : '' });
       });
     }
     db.lastUpdated = timestamp;
@@ -715,6 +725,10 @@ function renderDashboard() {
       <div class="issue-group-header" onclick="this.parentElement.querySelector('.issue-group-body').classList.toggle('open')">
         <span class="issue-group-title">${groupKey}</span>
         <span class="issue-group-badge ${open===0?'done':''}">${open===0?'All done':open+' open'}</span>
+        <button onclick="event.stopPropagation();editSubmission('${groupIssues[0].room}','${groupIssues[0].area}','${groupIssues[0].trade}')"
+          style="font-size:11px;padding:4px 10px;border-radius:99px;border:1.5px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--text2);margin-left:6px;flex-shrink:0">
+          ✏ Edit
+        </button>
       </div>
       <div class="issue-group-body open"></div>`;
     const body = group.querySelector('.issue-group-body');
@@ -741,7 +755,7 @@ function renderDashboard() {
         <div class="issue-row-info">
           <div class="issue-row-item">${issue.cat} — ${issue.item}</div>
           ${issue.note?`<div class="issue-row-note">${issue.note}</div>`:''}
-          <div class="issue-row-meta">${issue.trade} · ${issue.inspector} · ${issue.timestamp}</div>
+          <div class="issue-row-meta">${issue.trade} · ${issue.inspector} · ${issue.timestamp}${issue.editedBy?` · ✏ edited by ${issue.editedBy}`:''}</div>
           ${assigned.length?`<div class="issue-row-assigned">👤 ${assigned.join(', ')}</div>`:''}
           <div id="comp-note-area-${issue.id}" style="display:none;margin-top:6px">
             <textarea id="comp-note-${issue.id}" rows="2" placeholder="Add completion note…"
@@ -975,6 +989,69 @@ function sendAssignments() {
 }
 
 // ── Export Excel ───────────────────────────────────────────────────────────
+function editSubmission(room, area, trade) {
+  // Find all issues for this room/area/trade
+  const roomIssues = db.issues.filter(i => i.room===room && i.area===area && i.trade===trade && !i.allClear);
+  const inspector = roomIssues[0]?.inspector || '';
+
+  // Switch to inspect mode
+  setMode('inspect');
+
+  // Pre-select area tab
+  const catIdx = ROOM_CATEGORIES.findIndex(c => c.label === area);
+  if(catIdx >= 0) {
+    activeCat = catIdx;
+    selectedArea = area;
+    document.querySelectorAll('.cat-tab').forEach((t,j) => t.classList.toggle('active', j===catIdx));
+    buildRoomChips(catIdx);
+  }
+
+  // Pre-select room
+  selectedRoom = room;
+  document.querySelectorAll('.room-chip').forEach(c => {
+    c.classList.remove('selected');
+    if(c.textContent.trim() === room) c.classList.add('selected');
+  });
+
+  // Pre-select inspector and trade
+  const inspSel = document.getElementById('sel-inspector');
+  Array.from(inspSel.options).forEach(opt => {
+    if(opt.value === inspector || opt.text === inspector) inspSel.value = opt.value;
+  });
+  autoSetTrade(inspSel);
+  document.getElementById('sel-trade').value = trade;
+  document.getElementById('trade-label').textContent = trade;
+  document.getElementById('trade-display').style.display = 'block';
+
+  // Build form and pre-fill
+  currentIssues = {};
+  buildIssueForm(trade);
+  roomIssues.forEach(i => {
+    const key = `${i.cat}___${i.item}`;
+    currentIssues[key] = { cat:i.cat, item:i.item, trade, note:i.note||'', selected:true };
+    const sid = safeId(key);
+    const row = document.querySelector(`#chk-${sid}`)?.parentElement;
+    const chk = document.getElementById(`chk-${sid}`);
+    const noteEl = document.getElementById(`note-${sid}`);
+    if(row) row.classList.add('selected');
+    if(chk) chk.textContent = '✓';
+    if(noteEl) { noteEl.classList.add('visible'); noteEl.value = i.note||''; }
+    // If custom item not in default list, add it
+    if(!row) {
+      const catSid = safeId(i.cat);
+      addCustomIssue(catSid, i.cat, trade);
+    }
+  });
+
+  // Store edit context so submit overwrites instead of adding
+  window._editContext = { room, area, trade };
+
+  document.getElementById('room-header-title').textContent = `Room ${room} (Editing)`;
+  document.getElementById('room-header-sub').textContent = `${area} · ${trade}`;
+  document.getElementById('screen-setup').style.display = 'none';
+  document.getElementById('screen-issues').style.display = 'block';
+}
+
 let resetTapCount = 0;
 let resetTapTimer = null;
 
