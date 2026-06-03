@@ -39,7 +39,7 @@
       "cat": "Doors",
       "item": "Latch adjustment",
       "note": "",
-      "done": true,
+      "done": false,
       "allClear": false,
       "assignedTo": [
         "Corey Walker"
