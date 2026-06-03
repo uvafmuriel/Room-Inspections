@@ -28,24 +28,6 @@
       "done": true,
       "allClear": true,
       "assignedTo": []
-    },
-    {
-      "id": "1780489360273-ddd2qix5hqc-epdjuc18qfk",
-      "room": "1",
-      "area": "West Lawn",
-      "trade": "Carpentry",
-      "inspector": "Corey Walker",
-      "timestamp": "6/3/2026, 8:22 AM",
-      "cat": "Doors",
-      "item": "Latch adjustment",
-      "note": "",
-      "done": false,
-      "allClear": false,
-      "assignedTo": [],
-      "completionNote": "",
-      "generalNote": "",
-      "editedBy": "Corey Walker",
-      "editedAt": "6/3/2026, 8:22 AM"
     }
   ],
   "assignments": [],
