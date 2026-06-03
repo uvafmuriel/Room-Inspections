@@ -41,7 +41,9 @@
       "note": "",
       "done": false,
       "allClear": false,
-      "assignedTo": [],
+      "assignedTo": [
+        "Corey Walker"
+      ],
       "completionNote": "",
       "generalNote": ""
     }
