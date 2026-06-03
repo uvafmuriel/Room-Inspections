@@ -295,6 +295,23 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
       </div>
     </div>
     <div id="dashboard-list"></div>
+
+    <!-- Hidden reset - triple tap the version text to reveal -->
+    <div style="text-align:center;margin-top:40px;padding-bottom:20px">
+      <span id="reset-trigger" style="font-size:11px;color:var(--border);user-select:none;cursor:default" 
+        onclick="handleResetTap()">v2.0</span>
+    </div>
+    <div id="reset-panel" style="display:none;background:var(--accent-light);border:2px solid var(--accent);border-radius:var(--radius);padding:16px;margin-top:8px">
+      <div style="font-size:14px;font-weight:600;color:var(--accent-text);margin-bottom:8px">⚠️ End of Season Reset</div>
+      <div style="font-size:13px;color:var(--accent-text);margin-bottom:14px;line-height:1.5">This will archive all current data to <strong>db_archive_2026.json</strong> and clear the database. This cannot be undone.</div>
+      <button onclick="startReset()" style="width:100%;padding:12px;background:var(--accent);color:white;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer">
+        I understand — Archive & Reset
+      </button>
+      <button onclick="document.getElementById('reset-panel').style.display='none'; resetTapCount=0;" 
+        style="width:100%;padding:10px;margin-top:8px;background:transparent;color:var(--accent-text);border:1.5px solid var(--accent);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer">
+        Cancel
+      </button>
+    </div>
   </div>
 </div>
 </div>
@@ -958,6 +975,46 @@ function sendAssignments() {
 }
 
 // ── Export Excel ───────────────────────────────────────────────────────────
+let resetTapCount = 0;
+let resetTapTimer = null;
+
+function handleResetTap() {
+  resetTapCount++;
+  clearTimeout(resetTapTimer);
+  resetTapTimer = setTimeout(() => { resetTapCount = 0; }, 1500);
+  if(resetTapCount >= 3) {
+    resetTapCount = 0;
+    document.getElementById('reset-panel').style.display = 'block';
+    document.getElementById('reset-panel').scrollIntoView({ behavior:'smooth' });
+  }
+}
+
+async function startReset() {
+  const confirm1 = confirm('FIRST CONFIRMATION\n\nAre you sure you want to archive and reset all inspection data?\n\nThis will permanently clear the active database.');
+  if(!confirm1) return;
+  const confirm2 = confirm('SECOND CONFIRMATION\n\nThis is your last chance to cancel.\n\nAll current issues will be archived to db_archive_2026.json and the active database will be cleared.\n\nProceed?');
+  if(!confirm2) return;
+  showSpinner('Archiving data...');
+  try {
+    await loadDB();
+    // Save archive
+    const year = new Date().getFullYear();
+    const archiveContent = btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
+    await fetch(`https://api.github.com/repos/${REPO}/contents/db_archive_${year}.json`, {
+      method: 'PUT',
+      headers: { Authorization: `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: `Archive ${year} inspection data`, content: archiveContent })
+    });
+    // Reset db
+    db = { issues: [], lastUpdated: '' };
+    await saveDB();
+    hideSpinner();
+    document.getElementById('reset-panel').style.display = 'none';
+    renderDashboard();
+    alert('✅ Data archived and database reset successfully.');
+  } catch(e) { hideSpinner(); alert('Failed: ' + e.message); }
+}
+
 function exportExcel() {
   const issues = db.issues.filter(i=>!i.allClear);
   const areaOrder = ['West Lawn','West Range','East Lawn','East Range'];
