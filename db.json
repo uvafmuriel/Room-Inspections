@@ -28,8 +28,38 @@
       "done": true,
       "allClear": true,
       "assignedTo": []
+    },
+    {
+      "id": "1784030870078-3ayknfy93nd-kpegy2rens",
+      "room": "53",
+      "area": "West Range",
+      "trade": "Carpentry",
+      "inspector": "Corey Walker",
+      "timestamp": "7/14/2026, 8:07 AM",
+      "cat": "Furniture",
+      "item": "Reset furniture",
+      "note": "",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "3 waxed? Showing some grove separation and splinting",
+      "editedBy": "",
+      "editedAt": ""
     }
   ],
   "assignments": [],
-  "lastUpdated": "6/3/2026, 8:22 AM"
+  "lastUpdated": "7/14/2026, 8:07 AM",
+  "woConfig": {
+    "West Lawn": "",
+    "West Range": "",
+    "East Lawn": "",
+    "East Range": ""
+  },
+  "phaseConfig": {
+    "Carpentry": "",
+    "Electrical": "",
+    "Plumbing": "",
+    "HVAC": ""
+  }
 }
