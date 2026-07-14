@@ -283,8 +283,9 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
         <input type="checkbox" id="select-all-cb" onchange="toggleSelectAll(this)" style="width:16px;height:16px;accent-color:var(--blue);cursor:pointer">
         Select all
       </label>
-      <button class="dash-action-btn" onclick="sendAssignments()">✉ Send Assignments</button>
-      <button class="dash-action-btn accent" onclick="exportExcel()">⬇ Export Excel</button>
+      <button class="dash-action-btn" onclick="sendAssignments()">✉ Send</button>
+      <button class="dash-action-btn" onclick="openWOModal()">⚙ WO/Phase</button>
+      <button class="dash-action-btn accent" onclick="exportExcel()">⬇ Export</button>
     </div>
     <div id="bulk-bar" style="display:none;background:var(--blue-light);border:1px solid var(--blue);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;display:none;align-items:center;gap:10px;flex-wrap:wrap">
       <span id="bulk-count" style="font-size:13px;font-weight:600;color:var(--blue-text);flex:1">0 selected</span>
@@ -367,9 +368,9 @@ const DB_PATH = 'db.json';
 
 const ROOM_CATEGORIES = [
   { label:'West Lawn',  rooms: Array.from({length:28},(_,i)=>String(1+i*2)).filter(n=>+n<=55) },
-  { label:'West Range', rooms: Array.from({length:27},(_,i)=>String(1+i*2)).filter(n=>+n<=53) },
+  { label:'West Range', rooms: Array.from({length:27},(_,i)=>String(1+i*2)).filter(n=>+n<=53&&+n!==1&&+n!==13&&+n!==51) },
   { label:'East Lawn',  rooms: Array.from({length:26},(_,i)=>String(2+i*2)).filter(n=>+n<=52) },
-  { label:'East Range', rooms: [...Array.from({length:27},(_,i)=>String(2+i*2)).filter(n=>+n<=54),'Cracker Box 1','Cracker Box 2'] },
+  { label:'East Range', rooms: [...Array.from({length:27},(_,i)=>String(2+i*2)).filter(n=>+n<=54&&+n!==24),'Cracker Box 1','Cracker Box 2'] },
 ];
 
 const CATEGORIES = {
@@ -676,7 +677,7 @@ function buildIssueForm(trade) {
     }
     const addRow = document.createElement('div');
     addRow.className = 'add-custom-row';
-    addRow.innerHTML = `<input class="add-custom-input" id="custom-${sid}" placeholder="Add custom issue…"/><button class="add-custom-btn" onclick="addCustomIssue('${sid}','${cat.name}','${trade}')">+ Add</button>`;
+    addRow.innerHTML = `<input class="add-custom-input" id="custom-${sid}" placeholder="Add custom issue…" onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomIssue('${sid}','${cat.name}','${trade}');}"/><button class="add-custom-btn" onclick="addCustomIssue('${sid}','${cat.name}','${trade}')">+ Add</button>`;
     card.appendChild(addRow);
     list.appendChild(card);
   });
@@ -796,10 +797,9 @@ async function submitIssues() {
     await loadDB();
     const generalNote = document.getElementById('general-note')?.value.trim() || '';
     // If editing, remove old issues first and mark edit
+    const wasEdited = !!window._editContext;
     if(window._editContext) {
       const {room:eRoom, area:eArea, trade:eTrade} = window._editContext;
-      const editedBy = inspector;
-      const editTime = timestamp;
       db.issues = db.issues.filter(i => !(i.room===eRoom && i.area===eArea && i.trade===eTrade && !i.allClear));
       window._editContext = null;
     }
@@ -808,7 +808,6 @@ async function submitIssues() {
         inspector, timestamp, cat:'General', item:'No issues', note:generalNote, done:true, allClear:true, assignedTo:[] });
     } else {
       selected.forEach(([,v]) => {
-        const wasEdited = window._editContext !== undefined;
         db.issues.push({ id:`${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`,
           room:selectedRoom, area:selectedArea, trade, inspector, timestamp,
           cat:v.cat, item:v.item, note:v.note, done:false, allClear:false,
@@ -937,7 +936,14 @@ function renderDashboard() {
     grouped[key].push(i);
   });
 
-  Object.entries(grouped).sort().forEach(([groupKey, groupIssues]) => {
+  const roomNum = s => { const m = s.match(/Room (\d+)/); return m ? +m[1] : 999; };
+  const areaOrder2 = ['West Lawn','West Range','East Lawn','East Range'];
+  Object.entries(grouped).sort((a,b) => {
+    const aArea = areaOrder2.findIndex(x => a[0].startsWith(x));
+    const bArea = areaOrder2.findIndex(x => b[0].startsWith(x));
+    if(aArea !== bArea) return aArea - bArea;
+    return roomNum(a[0]) - roomNum(b[0]);
+  }).forEach(([groupKey, groupIssues]) => {
     const open = groupIssues.filter(i=>!i.done).length;
     const group = document.createElement('div');
     group.className = 'issue-group';
@@ -1259,15 +1265,20 @@ function editSubmission(room, area, trade) {
     if(row) row.classList.add('selected');
     if(chk) chk.textContent = '✓';
     if(noteEl) { noteEl.classList.add('visible'); noteEl.value = i.note||''; }
-    // If custom item not in default list, add it
+    // If custom item not in default list, add it as custom with existing note
     if(!row) {
       const catSid = safeId(i.cat);
-      addCustomIssue(catSid, i.cat, trade);
+      addCustomIssueWithValue(catSid, i.cat, trade, i.item, i.note||'');
     }
   });
 
   // Store edit context so submit overwrites instead of adding
   window._editContext = { room, area, trade };
+
+  // Restore general note (use the first non-allClear issue's generalNote)
+  const gNoteVal = roomIssues[0]?.generalNote || '';
+  const gNoteEl = document.getElementById('general-note');
+  if(gNoteEl) gNoteEl.value = gNoteVal;
 
   document.getElementById('room-header-title').textContent = `Room ${room} (Editing)`;
   document.getElementById('room-header-sub').textContent = `${area} · ${trade}`;
@@ -1406,6 +1417,7 @@ function exportExcel() {
   <th>Category</th>
   <th>Issue</th>
   <th>Notes</th>
+  <th>General Note</th>
   <th>Inspector</th>
   <th>Date</th>
   <th>Time</th>
@@ -1433,6 +1445,7 @@ function exportExcel() {
       <td>${i.cat}</td>
       <td>${i.item}</td>
       <td>${note}</td>
+      <td>${(i.generalNote||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</td>
       <td>${i.inspector}</td>
       <td>${date}</td>
       <td>${time}</td>
