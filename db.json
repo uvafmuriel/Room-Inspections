@@ -48,12 +48,12 @@
       "editedAt": ""
     },
     {
-      "id": "1784031373384-cn799scz005-yk2c9mskumk",
+      "id": "1784031429644-5kddud0oj4-54zmretk3bg",
       "room": "49",
       "area": "West Range",
       "trade": "Carpentry",
       "inspector": "Corey Walker",
-      "timestamp": "7/14/2026, 8:16 AM",
+      "timestamp": "7/14/2026, 8:17 AM",
       "cat": "Doors",
       "item": "Chain lock missing",
       "note": "",
@@ -62,12 +62,12 @@
       "assignedTo": [],
       "completionNote": "",
       "generalNote": "3 waxed? Showing some grove separation and splinting",
-      "editedBy": "",
-      "editedAt": ""
+      "editedBy": "Corey Walker",
+      "editedAt": "7/14/2026, 8:17 AM"
     }
   ],
   "assignments": [],
-  "lastUpdated": "7/14/2026, 8:16 AM",
+  "lastUpdated": "7/14/2026, 8:17 AM",
   "woConfig": {
     "West Lawn": "",
     "West Range": "",
