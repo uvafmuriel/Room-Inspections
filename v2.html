@@ -70,6 +70,12 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .add-custom-row{padding:10px 14px;display:flex;gap:8px;border-top:1px solid var(--border)}
 .add-custom-input{flex:1;padding:8px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;outline:none}
 .add-custom-btn{padding:8px 14px;background:#1a1a18;color:#f5f3ee;border:none;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+.custom-item-wrapper{display:flex;flex-direction:column}
+.custom-item-row{display:flex;align-items:center;gap:0}
+.custom-label{flex:1}
+.custom-actions{display:flex;gap:4px;margin-left:auto;padding-right:10px;flex-shrink:0}
+.custom-action-btn{background:none;border:none;cursor:pointer;font-size:15px;padding:4px 2px;opacity:.6;line-height:1}
+.custom-action-btn:hover{opacity:1}
 .bottom-bar{position:fixed;bottom:0;left:0;right:0;background:#1a1a18;padding:12px 16px;padding-bottom:calc(12px + var(--safe-bottom));display:flex;gap:10px;z-index:100}
 .bottom-btn{flex:1;padding:14px;border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none}
 .bottom-btn.outline{background:rgba(255,255,255,.12);color:#f5f3ee}
@@ -694,17 +700,89 @@ function addCustomIssue(sid, catName, trade) {
   const input = document.getElementById(`custom-${sid}`);
   const val = input.value.trim();
   if(!val) return;
-  const key = `${catName}___${val}`;
-  currentIssues[key] = { cat:catName, item:val, trade, note:'', selected:true };
-  const itemsDiv = document.getElementById(`items-${sid}`);
-  const row = document.createElement('div');
-  row.className = 'issue-item-row selected';
-  row.innerHTML = `<div class="issue-item-check">✓</div><span class="issue-item-name">${val}</span>`;
-  const ta = document.createElement('textarea');
-  ta.className = 'note-area visible'; ta.placeholder = 'Add details…'; ta.rows = 2;
-  ta.oninput = e => { currentIssues[key].note = e.target.value; };
-  itemsDiv.appendChild(row); itemsDiv.appendChild(ta);
+  addCustomIssueWithValue(sid, catName, trade, val);
   input.value = '';
+}
+
+function addCustomIssueWithValue(sid, catName, trade, val, existingNote) {
+  const key = `${catName}___${val}`;
+  currentIssues[key] = { cat:catName, item:val, trade, note: existingNote||'', selected:true };
+  const itemsDiv = document.getElementById(`items-${sid}`);
+  const wrapper = document.createElement('div');
+  wrapper.className = 'custom-item-wrapper';
+  wrapper.id = `custom-wrap-${safeId(key)}`;
+  // Row with toggle + label + edit/delete buttons
+  const row = document.createElement('div');
+  row.className = 'issue-item-row selected custom-item-row';
+  row.innerHTML = `<div class="issue-item-check" id="chk-custom-${safeId(key)}">✓</div><span class="issue-item-name custom-label" id="custom-label-${safeId(key)}">${val}</span><div class="custom-actions"><button class="custom-action-btn" onclick="editCustomIssue('${safeId(key)}','${catName}','${trade}')" title="Edit">✏️</button><button class="custom-action-btn delete" onclick="deleteCustomIssue('${safeId(key)}','${catName}','${trade}','${val}')" title="Delete">🗑️</button></div>`;
+  row.onclick = (e) => {
+    if(e.target.closest('.custom-actions')) return;
+    toggleIssue(key, catName, val, trade);
+    const chk = document.getElementById(`chk-custom-${safeId(key)}`);
+    if(chk) chk.textContent = currentIssues[key].selected ? '✓' : '';
+  };
+  const ta = document.createElement('textarea');
+  ta.className = 'note-area visible';
+  ta.id = `note-custom-${safeId(key)}`;
+  ta.placeholder = 'Add details…'; ta.rows = 2;
+  ta.value = existingNote || '';
+  ta.oninput = e => { currentIssues[key].note = e.target.value; };
+  wrapper.appendChild(row);
+  wrapper.appendChild(ta);
+  itemsDiv.appendChild(wrapper);
+}
+
+function editCustomIssue(safeKey, catName, trade) {
+  // Find the current label
+  const labelEl = document.getElementById(`custom-label-${safeKey}`);
+  if(!labelEl) return;
+  const currentVal = labelEl.textContent;
+  const newVal = prompt('Edit issue text:', currentVal);
+  if(!newVal || !newVal.trim() || newVal.trim() === currentVal) return;
+  const trimmed = newVal.trim();
+  // Update the key in currentIssues
+  const oldKey = `${catName}___${currentVal}`;
+  const newKey = `${catName}___${trimmed}`;
+  if(currentIssues[oldKey]) {
+    currentIssues[newKey] = { ...currentIssues[oldKey], item: trimmed };
+    delete currentIssues[oldKey];
+  }
+  // Update the label
+  labelEl.textContent = trimmed;
+  // Update the onclick attributes on the row's buttons
+  const wrapper = document.getElementById(`custom-wrap-${safeKey}`);
+  if(wrapper) {
+    wrapper.id = `custom-wrap-${safeId(newKey)}`;
+    const chk = document.getElementById(`chk-custom-${safeKey}`);
+    if(chk) chk.id = `chk-custom-${safeId(newKey)}`;
+    labelEl.id = `custom-label-${safeId(newKey)}`;
+    const ta = document.getElementById(`note-custom-${safeKey}`);
+    if(ta) {
+      ta.id = `note-custom-${safeId(newKey)}`;
+      ta.oninput = e => { currentIssues[newKey].note = e.target.value; };
+    }
+    const row = wrapper.querySelector('.custom-item-row');
+    if(row) {
+      row.onclick = (e) => {
+        if(e.target.closest('.custom-actions')) return;
+        toggleIssue(newKey, catName, trimmed, trade);
+        const c = document.getElementById(`chk-custom-${safeId(newKey)}`);
+        if(c) c.textContent = currentIssues[newKey].selected ? '✓' : '';
+      };
+      const editBtn = row.querySelector('.custom-action-btn:not(.delete)');
+      if(editBtn) editBtn.setAttribute('onclick', `editCustomIssue('${safeId(newKey)}','${catName}','${trade}')`);
+      const delBtn = row.querySelector('.custom-action-btn.delete');
+      if(delBtn) delBtn.setAttribute('onclick', `deleteCustomIssue('${safeId(newKey)}','${catName}','${trade}','${trimmed}')`);
+    }
+  }
+}
+
+function deleteCustomIssue(safeKey, catName, trade, val) {
+  if(!confirm(`Remove "${val}"?`)) return;
+  const key = `${catName}___${val}`;
+  delete currentIssues[key];
+  const wrapper = document.getElementById(`custom-wrap-${safeKey}`);
+  if(wrapper) wrapper.remove();
 }
 
 async function submitIssues() {
