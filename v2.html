@@ -374,6 +374,7 @@ const CATEGORIES = {
     { icon:'🪑', name:'Furniture', items:['Rocking chair missing','Straight-backed chair worn/replace','Bed repair','Desk repair','Bookshelf repair','Mirror'] },
     { icon:'🔥', name:'Fireplace', items:['Missing ash can','Missing brush','Missing tongs','Missing poker','Missing screen','Missing log rack','Missing holder','Missing shovel'] },
     { icon:'🧹', name:'Other', items:['Command strips — remove','Command strips — patch & paint','Wooden box cover under sink','Wood removal needed'] },
+    { icon:'🪵', name:'Floor Condition', items:[], floorCondition: true },
   ],
   Electrical: [
     { icon:'💡', name:'Lights', items:['Lights over sink not working','Lights inside sink enclosure not working'] },
@@ -546,6 +547,8 @@ function startInspection() {
   if(!trade){ alert('Please select your trade.'); return; }
   if(!selectedRoom){ alert('Please select a room.'); return; }
   currentIssues = {};
+  window._floorType = '';
+  window._floorGrade = 0;
   buildIssueForm(trade);
   document.getElementById('room-header-title').textContent = `Room ${selectedRoom}`;
   document.getElementById('room-header-sub').textContent = `${selectedArea} · ${trade}`;
@@ -556,30 +559,115 @@ function startInspection() {
 // ── Issue form ─────────────────────────────────────────────────────────────
 function safeId(s){ return s.replace(/[^a-zA-Z0-9]/g,'_'); }
 
+function selectFloorType(type) {
+  window._floorType = type;
+  document.getElementById('floor-wax-btn').style.background = type==='Wax' ? '#1a1a18' : 'var(--bg)';
+  document.getElementById('floor-wax-btn').style.color = type==='Wax' ? '#f5f3ee' : 'var(--text)';
+  document.getElementById('floor-wax-btn').style.borderColor = type==='Wax' ? '#1a1a18' : 'var(--border)';
+  document.getElementById('floor-poly-btn').style.background = type==='Poly' ? '#1a1a18' : 'var(--bg)';
+  document.getElementById('floor-poly-btn').style.color = type==='Poly' ? '#f5f3ee' : 'var(--text)';
+  document.getElementById('floor-poly-btn').style.borderColor = type==='Poly' ? '#1a1a18' : 'var(--border)';
+  updateFloorIssue();
+}
+
+function selectFloorGrade(grade) {
+  window._floorGrade = grade;
+  // Color grades: 1-4 red, 5-6 amber, 7-8 green-ish, 9-10 green
+  const colors = {1:'#c94f1e',2:'#c94f1e',3:'#c94f1e',4:'#c94f1e',5:'#b07820',6:'#b07820',7:'#3a7c4a',8:'#3a7c4a',9:'#265232',10:'#265232'};
+  const bgs = {1:'#faeae3',2:'#faeae3',3:'#faeae3',4:'#faeae3',5:'#fdf3dc',6:'#fdf3dc',7:'#e6f2e8',8:'#e6f2e8',9:'#d0ebda',10:'#d0ebda'};
+  for(let i=1;i<=10;i++) {
+    const btn = document.getElementById(`floor-grade-${i}`);
+    if(!btn) continue;
+    if(i===grade) {
+      btn.style.background = bgs[i];
+      btn.style.borderColor = colors[i];
+      btn.style.color = colors[i];
+    } else {
+      btn.style.background = 'var(--bg)';
+      btn.style.borderColor = 'var(--border)';
+      btn.style.color = 'var(--text)';
+    }
+  }
+  const disp = document.getElementById('floor-grade-display');
+  if(disp) disp.textContent = `— ${grade}/10`;
+  updateFloorIssue();
+}
+
+function updateFloorIssue() {
+  const type = window._floorType || '';
+  const grade = window._floorGrade || 0;
+  const note = document.getElementById('floor-note')?.value.trim() || '';
+  if(!type && !grade) { delete currentIssues['Floor Condition___floor']; return; }
+  const item = [type && `${type} finish`, grade && `Grade ${grade}/10`].filter(Boolean).join(', ');
+  currentIssues['Floor Condition___floor'] = { cat:'Floor Condition', item, trade:'Carpentry', note, selected:true };
+}
+
 function buildIssueForm(trade) {
   const list = document.getElementById('issues-list');
   list.innerHTML = '';
+  // Clear general notes from previous room
+  const gNote = document.getElementById('general-note');
+  if(gNote) gNote.value = '';
   (CATEGORIES[trade]||[]).forEach(cat => {
     const card = document.createElement('div');
     card.className = 'issue-card';
     const sid = safeId(cat.name);
     card.innerHTML = `<div class="issue-card-header"><span class="cat-icon">${cat.icon}</span><span class="cat-name">${cat.name}</span></div><div class="issue-items" id="items-${sid}"></div>`;
     const itemsDiv = card.querySelector(`#items-${sid}`);
-    cat.items.forEach(item => {
-      const key = `${cat.name}___${item}`;
-      const row = document.createElement('div');
-      row.className = 'issue-item-row';
-      row.innerHTML = `<div class="issue-item-check" id="chk-${safeId(key)}"></div><span class="issue-item-name">${item}</span>`;
-      row.onclick = () => toggleIssue(key, cat.name, item, trade);
-      itemsDiv.appendChild(row);
-      const ta = document.createElement('textarea');
-      ta.className = 'note-area';
-      ta.id = `note-${safeId(key)}`;
-      ta.placeholder = 'Add details…';
-      ta.rows = 2;
-      ta.oninput = e => { if(currentIssues[key]) currentIssues[key].note = e.target.value; };
-      itemsDiv.appendChild(ta);
-    });
+    if(cat.floorCondition) {
+      // Special floor condition UI
+      const floorDiv = document.createElement('div');
+      floorDiv.style.cssText = 'padding:12px 14px';
+      floorDiv.id = `floor-condition-${safeId(cat.name)}`;
+      floorDiv.innerHTML = `
+        <div style="margin-bottom:10px">
+          <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Finish Type</div>
+          <div style="display:flex;gap:8px">
+            <button id="floor-wax-btn" onclick="selectFloorType('Wax')" 
+              style="flex:1;padding:10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer">
+              Wax
+            </button>
+            <button id="floor-poly-btn" onclick="selectFloorType('Poly')"
+              style="flex:1;padding:10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer">
+              Poly
+            </button>
+          </div>
+        </div>
+        <div style="margin-bottom:10px">
+          <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Condition Grade <span id="floor-grade-display" style="color:var(--accent);font-size:14px"></span></div>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px" id="floor-grade-grid">
+            ${Array.from({length:10},(_,i)=>`
+              <button onclick="selectFloorGrade(${i+1})" id="floor-grade-${i+1}"
+                style="padding:10px 4px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--bg);font-family:'DM Mono',monospace;font-size:14px;font-weight:600;cursor:pointer">
+                ${i+1}
+              </button>`).join('')}
+          </div>
+        </div>
+        <textarea id="floor-note" rows="2" placeholder="Additional notes about the floor…"
+          style="width:100%;padding:9px 12px;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;resize:none;"
+          oninput="updateFloorIssue()"></textarea>
+      `;
+      itemsDiv.appendChild(floorDiv);
+      // Reset floor state
+      window._floorType = '';
+      window._floorGrade = 0;
+    } else {
+      cat.items.forEach(item => {
+        const key = `${cat.name}___${item}`;
+        const row = document.createElement('div');
+        row.className = 'issue-item-row';
+        row.innerHTML = `<div class="issue-item-check" id="chk-${safeId(key)}"></div><span class="issue-item-name">${item}</span>`;
+        row.onclick = () => toggleIssue(key, cat.name, item, trade);
+        itemsDiv.appendChild(row);
+        const ta = document.createElement('textarea');
+        ta.className = 'note-area';
+        ta.id = `note-${safeId(key)}`;
+        ta.placeholder = 'Add details…';
+        ta.rows = 2;
+        ta.oninput = e => { if(currentIssues[key]) currentIssues[key].note = e.target.value; };
+        itemsDiv.appendChild(ta);
+      });
+    }
     const addRow = document.createElement('div');
     addRow.className = 'add-custom-row';
     addRow.innerHTML = `<input class="add-custom-input" id="custom-${sid}" placeholder="Add custom issue…"/><button class="add-custom-btn" onclick="addCustomIssue('${sid}','${cat.name}','${trade}')">+ Add</button>`;
@@ -673,7 +761,7 @@ function hideSpinner(){ document.getElementById('submit-overlay').classList.remo
 
 // ── Dashboard ──────────────────────────────────────────────────────────────
 const TRADE_CATS = {
-  Carpentry: ['Paint & Plaster','Doors','Windows & Blinds','Furniture','Fireplace','Other'],
+  Carpentry: ['Paint & Plaster','Doors','Windows & Blinds','Furniture','Fireplace','Other','Floor Condition'],
   Electrical: ['Lights','Appliances','Safety'],
   Plumbing: ['Water','Fixtures'],
   HVAC: ['System','Equipment'],
@@ -1080,6 +1168,8 @@ function editSubmission(room, area, trade) {
 
   // Build form and pre-fill
   currentIssues = {};
+  window._floorType = '';
+  window._floorGrade = 0;
   buildIssueForm(trade);
   roomIssues.forEach(i => {
     const key = `${i.cat}___${i.item}`;
