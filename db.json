@@ -109,7 +109,7 @@
       "inspector": "Corey Walker",
       "timestamp": "7/14/2026, 8:22 AM",
       "cat": "Other",
-      "item": "Command strips â remove",
+      "item": "Command strips Ã¢ÂÂ remove",
       "note": "",
       "done": false,
       "allClear": false,
@@ -190,10 +190,28 @@
       "generalNote": "3 waxed? Showing some grove separation and splinting",
       "editedBy": "Corey Walker",
       "editedAt": "7/14/2026, 8:32 AM"
+    },
+    {
+      "id": "1784032542724-gld4d5lwnlu-4b9admmdy5r",
+      "room": "43",
+      "area": "West Range",
+      "trade": "Carpentry",
+      "inspector": "Corey Walker",
+      "timestamp": "7/14/2026, 8:35 AM",
+      "cat": "Other",
+      "item": "Poly floor grade 9 excellent condition",
+      "note": "",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "3 waxed? Showing some grove separation and splinting",
+      "editedBy": "Corey Walker",
+      "editedAt": "7/14/2026, 8:35 AM"
     }
   ],
   "assignments": [],
-  "lastUpdated": "7/14/2026, 8:32 AM",
+  "lastUpdated": "7/14/2026, 8:35 AM",
   "woConfig": {
     "West Lawn": "",
     "West Range": "",
