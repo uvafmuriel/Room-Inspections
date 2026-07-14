@@ -398,6 +398,17 @@ const CATEGORIES = {
   ],
 };
 
+// Rooms with original (waxed) floors — everything else defaults to modern/poly
+const ORIGINAL_FLOOR_ROOMS = {
+  'West Range': ['7','13','29','31','33','53'],
+  'West Lawn':  ['9','11','19','37','47','55'],
+  'East Lawn':  ['2','4','16','18','20','24','36'],
+  'East Range': ['16','18'],
+};
+function isOriginalFloor(area, room) {
+  return (ORIGINAL_FLOOR_ROOMS[area]||[]).includes(String(room));
+}
+
 const TRADE_PEOPLE = {
   Carpentry: ['Bryan','Mike','Jon','Lex','Josh','Corey Walker'],
   Electrical: ['Morgan','Brittany','Anthony','Jalisa','Richard'],
@@ -568,21 +579,21 @@ function safeId(s){ return s.replace(/[^a-zA-Z0-9]/g,'_'); }
 
 function selectFloorType(type) {
   window._floorType = type;
-  document.getElementById('floor-wax-btn').style.background = type==='Wax' ? '#1a1a18' : 'var(--bg)';
-  document.getElementById('floor-wax-btn').style.color = type==='Wax' ? '#f5f3ee' : 'var(--text)';
-  document.getElementById('floor-wax-btn').style.borderColor = type==='Wax' ? '#1a1a18' : 'var(--border)';
-  document.getElementById('floor-poly-btn').style.background = type==='Poly' ? '#1a1a18' : 'var(--bg)';
-  document.getElementById('floor-poly-btn').style.color = type==='Poly' ? '#f5f3ee' : 'var(--text)';
-  document.getElementById('floor-poly-btn').style.borderColor = type==='Poly' ? '#1a1a18' : 'var(--border)';
+  document.getElementById('floor-wax-btn').style.background = type==='Original/Waxed' ? '#1a1a18' : 'var(--bg)';
+  document.getElementById('floor-wax-btn').style.color = type==='Original/Waxed' ? '#f5f3ee' : 'var(--text)';
+  document.getElementById('floor-wax-btn').style.borderColor = type==='Original/Waxed' ? '#1a1a18' : 'var(--border)';
+  document.getElementById('floor-poly-btn').style.background = type==='Modern/Poly' ? '#1a1a18' : 'var(--bg)';
+  document.getElementById('floor-poly-btn').style.color = type==='Modern/Poly' ? '#f5f3ee' : 'var(--text)';
+  document.getElementById('floor-poly-btn').style.borderColor = type==='Modern/Poly' ? '#1a1a18' : 'var(--border)';
   updateFloorIssue();
 }
 
 function selectFloorGrade(grade) {
   window._floorGrade = grade;
-  // Color grades: 1-4 red, 5-6 amber, 7-8 green-ish, 9-10 green
-  const colors = {1:'#c94f1e',2:'#c94f1e',3:'#c94f1e',4:'#c94f1e',5:'#b07820',6:'#b07820',7:'#3a7c4a',8:'#3a7c4a',9:'#265232',10:'#265232'};
-  const bgs = {1:'#faeae3',2:'#faeae3',3:'#faeae3',4:'#faeae3',5:'#fdf3dc',6:'#fdf3dc',7:'#e6f2e8',8:'#e6f2e8',9:'#d0ebda',10:'#d0ebda'};
-  for(let i=1;i<=10;i++) {
+  // Color grades: 1-2 red, 3 amber, 4-5 green
+  const colors = {1:'#c94f1e',2:'#c94f1e',3:'#b07820',4:'#3a7c4a',5:'#265232'};
+  const bgs = {1:'#faeae3',2:'#faeae3',3:'#fdf3dc',4:'#e6f2e8',5:'#d0ebda'};
+  for(let i=1;i<=5;i++) {
     const btn = document.getElementById(`floor-grade-${i}`);
     if(!btn) continue;
     if(i===grade) {
@@ -596,7 +607,7 @@ function selectFloorGrade(grade) {
     }
   }
   const disp = document.getElementById('floor-grade-display');
-  if(disp) disp.textContent = `— ${grade}/10`;
+  if(disp) disp.textContent = `— ${grade}/5`;
   updateFloorIssue();
 }
 
@@ -605,7 +616,7 @@ function updateFloorIssue() {
   const grade = window._floorGrade || 0;
   const note = document.getElementById('floor-note')?.value.trim() || '';
   if(!type && !grade) { delete currentIssues['Floor Condition___floor']; return; }
-  const item = [type && `${type} finish`, grade && `Grade ${grade}/10`].filter(Boolean).join(', ');
+  const item = [type && `${type} finish`, grade && `Grade ${grade}/5`].filter(Boolean).join(', ');
   currentIssues['Floor Condition___floor'] = { cat:'Floor Condition', item, trade:'Carpentry', note, selected:true };
 }
 
@@ -630,20 +641,20 @@ function buildIssueForm(trade) {
         <div style="margin-bottom:10px">
           <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Finish Type</div>
           <div style="display:flex;gap:8px">
-            <button id="floor-wax-btn" onclick="selectFloorType('Wax')" 
+            <button id="floor-wax-btn" onclick="selectFloorType('Original/Waxed')" 
               style="flex:1;padding:10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer">
-              Wax
+              Original/Waxed
             </button>
-            <button id="floor-poly-btn" onclick="selectFloorType('Poly')"
+            <button id="floor-poly-btn" onclick="selectFloorType('Modern/Poly')"
               style="flex:1;padding:10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--bg);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer">
-              Poly
+              Modern/Poly
             </button>
           </div>
         </div>
         <div style="margin-bottom:10px">
           <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Condition Grade <span id="floor-grade-display" style="color:var(--accent);font-size:14px"></span></div>
           <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px" id="floor-grade-grid">
-            ${Array.from({length:10},(_,i)=>`
+            ${Array.from({length:5},(_,i)=>`
               <button onclick="selectFloorGrade(${i+1})" id="floor-grade-${i+1}"
                 style="padding:10px 4px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--bg);font-family:'DM Mono',monospace;font-size:14px;font-weight:600;cursor:pointer">
                 ${i+1}
@@ -681,6 +692,10 @@ function buildIssueForm(trade) {
     card.appendChild(addRow);
     list.appendChild(card);
   });
+  // Prefill Finish Type based on room's known floor history
+  if(trade === 'Carpentry' && document.getElementById('floor-wax-btn')) {
+    selectFloorType(isOriginalFloor(selectedArea, selectedRoom) ? 'Original/Waxed' : 'Modern/Poly');
+  }
 }
 
 function toggleIssue(key, catName, item, trade) {
