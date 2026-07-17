@@ -2289,7 +2289,7 @@
       "cat": "Floor Condition",
       "item": "Modern/Poly finish, Grade 3/5",
       "note": "",
-      "done": true,
+      "done": false,
       "allClear": false,
       "assignedTo": [],
       "completionNote": "",
