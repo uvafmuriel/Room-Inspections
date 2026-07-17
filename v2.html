@@ -235,6 +235,11 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
             <option data-trade="HVAC">Jason</option>
             <option data-trade="HVAC">Wayne</option>
           </optgroup>
+          <optgroup label="Admin">
+            <option data-trade="Admin">Randy</option>
+            <option data-trade="Admin">Uriel</option>
+            <option data-trade="Admin">Jacob</option>
+          </optgroup>
         </select>
       </div>
       <div class="field-group" id="trade-display" style="display:none">
@@ -379,8 +384,8 @@ const CATEGORIES = {
     { icon:'🚪', name:'Doors', items:['Door knob loose','Missing screws','Needs night latch','Hinge loose/tighten','Latch adjustment','Door dragging','Chain lock missing'] },
     { icon:'🪟', name:'Windows & Blinds', items:['Blinds broken/replace','Blinds stuck','Missing screen','Window blocks needed','Broken window pane'] },
     { icon:'🪑', name:'Furniture', items:['Rocking chair missing','Straight-backed chair worn/replace','Bed repair','Desk repair','Bookshelf repair','Mirror'] },
-    { icon:'🔥', name:'Fireplace', items:['Missing ash can','Missing brush','Missing tongs','Missing poker','Missing screen','Missing log rack','Missing holder','Missing shovel'] },
-    { icon:'🧹', name:'Other', items:['Command strips — remove','Command strips — patch & paint','Wooden box cover under sink','Wood removal needed'] },
+    { icon:'🔥', name:'Fireplace', items:['Ash can missing/broken','Brush missing/broken','Tongs missing/broken','Poker missing/broken','Screen missing/broken','Log rack missing/broken','Holder missing/broken','Shovel missing/broken'] },
+    { icon:'🧹', name:'Other', items:['Command strips — remove','Command strips — patch & paint','Wooden box cover under sink missing/broken','Wood removal needed'] },
     { icon:'🪵', name:'Floor Condition', items:[], floorCondition: true },
   ],
   Electrical: [
@@ -395,6 +400,23 @@ const CATEGORIES = {
   HVAC: [
     { icon:'🌡️', name:'System', items:['Heating not working','Cooling not working','Filter needs replacement','Vents blocked'] },
     { icon:'📦', name:'Equipment', items:['Unit cover missing','Hoses missing','Remote missing'] },
+  ],
+  Admin: [
+    { icon:'🏠', name:'Paint & Plaster', items:['Touch up paint','Patch and paint','Paint walls/ceiling','Paint door','Windowsill/mantle paint','Exterior paint','Plaster repair','Bubbling/scaling plaster','Water damage'] },
+    { icon:'🚪', name:'Doors', items:['Door knob loose','Missing screws','Needs night latch','Hinge loose/tighten','Latch adjustment','Door dragging','Chain lock missing'] },
+    { icon:'🪟', name:'Windows & Blinds', items:['Blinds broken/replace','Blinds stuck','Missing screen','Window blocks needed','Broken window pane'] },
+    { icon:'🪑', name:'Furniture', items:['Rocking chair missing','Straight-backed chair worn/replace','Bed repair','Desk repair','Bookshelf repair','Mirror'] },
+    { icon:'🔥', name:'Fireplace', items:['Ash can missing/broken','Brush missing/broken','Tongs missing/broken','Poker missing/broken','Screen missing/broken','Log rack missing/broken','Holder missing/broken','Shovel missing/broken'] },
+    { icon:'🧹', name:'Other', items:['Command strips — remove','Command strips — patch & paint','Wooden box cover under sink missing/broken','Wood removal needed'] },
+    { icon:'🪵', name:'Floor Condition', items:[], floorCondition: true },
+    { icon:'💡', name:'Lights', items:['Lights over sink not working','Lights inside sink enclosure not working'] },
+    { icon:'🔌', name:'Appliances', items:['Refrigerator issue','Microwave issue','Fan not working','Receptacle issue'] },
+    { icon:'🧯', name:'Safety', items:['CO detector issue','Smoke alarm issue','Fire extinguisher issue','Extinguisher tag expired'] },
+    { icon:'💧', name:'Water', items:['Leak present','No hot water','No cold water','Low pressure'] },
+    { icon:'🚰', name:'Fixtures', items:['Sink drain issue','Stops issue','AAV issue','Faucet issue'] },
+    { icon:'🌡️', name:'System', items:['Heating not working','Cooling not working','Filter needs replacement','Vents blocked'] },
+    { icon:'📦', name:'Equipment', items:['Unit cover missing','Hoses missing','Remote missing'] },
+    { icon:'🔒', name:'Bike Lock & Cable', items:[], bikeLock: true },
   ],
 };
 
@@ -581,6 +603,17 @@ function startInspection() {
   currentIssues = {};
   window._floorType = '';
   window._floorGrade = 0;
+  // Reset bike lock UI
+  setTimeout(() => {
+    const lCb = document.getElementById('bike-lock-cb');
+    const cCb = document.getElementById('bike-cable-cb');
+    if (lCb) lCb.checked = false;
+    if (cCb) cCb.checked = false;
+    const lEl = document.getElementById('bike-lock-label');
+    const cEl = document.getElementById('bike-cable-label');
+    if (lEl) lEl.style.borderColor = 'var(--border)';
+    if (cEl) cEl.style.borderColor = 'var(--border)';
+  }, 50);
   buildIssueForm(trade);
   document.getElementById('room-header-title').textContent = `Room ${selectedRoom}`;
   document.getElementById('room-header-sub').textContent = `${selectedArea} · ${trade}`;
@@ -590,6 +623,30 @@ function startInspection() {
 
 // ── Issue form ─────────────────────────────────────────────────────────────
 function safeId(s){ return s.replace(/[^a-zA-Z0-9]/g,'_'); }
+
+function updateBikeLockIssue() {
+  const lockCb  = document.getElementById('bike-lock-cb');
+  const cableCb = document.getElementById('bike-cable-cb');
+  const noteEl  = document.getElementById('bike-lock-note');
+  const lockEl  = document.getElementById('bike-lock-label');
+  const cableEl = document.getElementById('bike-cable-label');
+  if (!lockCb) return;
+  const hasLock  = lockCb.checked;
+  const hasCable = cableCb.checked;
+  // Highlight selected
+  if (lockEl)  lockEl.style.borderColor  = hasLock  ? 'var(--blue)' : 'var(--border)';
+  if (cableEl) cableEl.style.borderColor = hasCable ? 'var(--blue)' : 'var(--border)';
+  const key = 'Bike Lock & Cable___missing';
+  if (!hasLock && !hasCable) {
+    delete currentIssues[key];
+    return;
+  }
+  let item = '';
+  if (hasLock && hasCable) item = 'Missing bike lock and cable';
+  else if (hasLock)         item = 'Missing bike lock';
+  else                      item = 'Missing bike cable';
+  currentIssues[key] = { cat:'Bike Lock & Cable', item, trade: document.getElementById('sel-trade').value, note: noteEl ? noteEl.value : '', selected: true };
+}
 
 function selectFloorType(type) {
   window._floorType = type;
@@ -646,7 +703,24 @@ function buildIssueForm(trade) {
     const sid = safeId(cat.name);
     card.innerHTML = `<div class="issue-card-header"><span class="cat-icon">${cat.icon}</span><span class="cat-name">${cat.name}</span></div><div class="issue-items" id="items-${sid}"></div>`;
     const itemsDiv = card.querySelector(`#items-${sid}`);
-    if(cat.floorCondition) {
+    if(cat.bikeLock) {
+      // Special bike lock UI — checkboxes for lock and/or cable
+      const bikeDiv = document.createElement('div');
+      bikeDiv.style.cssText = 'padding:12px 14px';
+      bikeDiv.innerHTML = `
+        <div style="font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">What is missing?</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:8px;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:14px;font-weight:500;background:var(--bg)" id="bike-lock-label">
+            <input type="checkbox" id="bike-lock-cb" onchange="updateBikeLockIssue()" style="width:17px;height:17px;accent-color:var(--blue);cursor:pointer"> Bike Lock
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:14px;font-weight:500;background:var(--bg)" id="bike-cable-label">
+            <input type="checkbox" id="bike-cable-cb" onchange="updateBikeLockIssue()" style="width:17px;height:17px;accent-color:var(--blue);cursor:pointer"> Cable
+          </label>
+        </div>
+        <textarea class="note-area visible" id="bike-lock-note" placeholder="Add details..." rows="2" style="margin-top:10px" oninput="updateBikeLockIssue()"></textarea>`;
+      itemsDiv.appendChild(bikeDiv);
+      itemsDiv.closest('.issue-card').querySelector('.issue-card-header').style.cursor = 'default';
+    } else if(cat.floorCondition) {
       // Special floor condition UI
       const floorDiv = document.createElement('div');
       floorDiv.style.cssText = 'padding:12px 14px';
@@ -911,6 +985,7 @@ const TRADE_CATS = {
   Electrical: ['Lights','Appliances','Safety'],
   Plumbing: ['Water','Fixtures'],
   HVAC: ['System','Equipment'],
+  Admin: ['Paint & Plaster','Doors','Windows & Blinds','Furniture','Fireplace','Other','Floor Condition','Lights','Appliances','Safety','Water','Fixtures','System','Equipment','Bike Lock & Cable'],
 };
 
 function setFilter(type, val, btn) {
@@ -1321,6 +1396,17 @@ function editSubmission(room, area, trade) {
   currentIssues = {};
   window._floorType = '';
   window._floorGrade = 0;
+  // Reset bike lock UI
+  setTimeout(() => {
+    const lCb = document.getElementById('bike-lock-cb');
+    const cCb = document.getElementById('bike-cable-cb');
+    if (lCb) lCb.checked = false;
+    if (cCb) cCb.checked = false;
+    const lEl = document.getElementById('bike-lock-label');
+    const cEl = document.getElementById('bike-cable-label');
+    if (lEl) lEl.style.borderColor = 'var(--border)';
+    if (cEl) cEl.style.borderColor = 'var(--border)';
+  }, 50);
   buildIssueForm(trade);
   roomIssues.forEach(i => {
     const key = `${i.cat}___${i.item}`;
