@@ -818,20 +818,18 @@ function deleteCustomIssue(safeKey, catName, trade, val) {
 // Strip encoding garbage from item/note text before saving
 function sanitizeText(text) {
   if (!text) return text;
-  // If long, extract clean ASCII prefix + suffix around corruption
+  // If suspiciously long, extract clean ASCII prefix and suffix
   if (text.length > 300) {
-    const m = text.match(/^([ -]+)/);
-    const prefix = m ? m[1].trim() : '';
-    const sm = text.match(/([ -]{3,})$/);
-    const suffix = sm ? sm[1].trim() : '';
+    const prefix = (text.match(/^[ -~]+/) || [""])[0].trim();
+    const suffix = (text.match(/[ -~]{3,}$/) || [""])[0].trim();
     if (prefix && suffix && suffix.toLowerCase() !== prefix.toLowerCase()) {
-      return (prefix + ' — ' + suffix).slice(0, 500);
+      return (prefix + " — " + suffix).slice(0, 500);
     }
     return (prefix || text.slice(0, 100)).slice(0, 500);
   }
-  // Strip ALL non-ASCII characters — catches any encoding corruption variant
-  let clean = text.replace(/[^ -]+/g, '');
-  clean = clean.replace(/  +/g, ' ').trim();
+  // Strip all non-printable-ASCII characters
+  let clean = text.replace(/[^ -~]+/g, "");
+  clean = clean.replace(/  +/g, " ").trim();
   return clean.slice(0, 500);
 }
 
@@ -1420,7 +1418,7 @@ async function startReset() {
     await loadDB();
     // Save archive
     const year = new Date().getFullYear();
-    const archiveContent = btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))));
+    const archiveContent = dbToBase64();
     await fetch(`https://api.github.com/repos/${REPO}/contents/db_archive_${year}.json`, {
       method: 'PUT',
       headers: { Authorization: `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
