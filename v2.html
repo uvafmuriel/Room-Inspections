@@ -806,13 +806,29 @@ function deleteCustomIssue(safeKey, catName, trade, val) {
 // Strip encoding garbage from item/note text before saving
 function sanitizeText(text) {
   if (!text) return text;
-  // Remove UTF-8 double-encoding artifacts (Ã, Â sequences)
-  let clean = text.replace(/(?:[ÃÂ¢ÃÂ¢]){2,}/g, '');
-  clean = clean.replace(/[ÃÂ¢ÃÂ¢]/g, '');
-  // Collapse multiple spaces
+  // If suspiciously long, extract clean ASCII prefix + suffix
+  if (text.length > 500) {
+    const m = text.match(/^([A-Za-z0-9 &'\-.\/,()]+)/);
+    const prefix = m ? m[1].trim() : '';
+    const sm = text.toLowerCase().match(/([a-z][a-z0-9 &'\-.\/,()]{2,})$/);
+    const suffix = sm ? sm[1].trim() : '';
+    if (prefix && suffix && suffix !== prefix.toLowerCase()) return (prefix + ' — ' + suffix).slice(0,500);
+    return (prefix || text.slice(0,100)).slice(0,500);
+  }
+  // Strip UTF-8 double-encoding artifacts by removing non-ASCII chars in suspicious runs
+  let clean = text.replace(/[À-ÿ]{2,}/g, '');
+  clean = clean.replace(/[À-ÿ]/g, '');
   clean = clean.replace(/  +/g, ' ').trim();
-  // Hard cap at 500 chars to prevent any future bloat
   return clean.slice(0, 500);
+}
+
+// Sanitize all text fields across every issue in the DB
+function sanitizeDB(db) {
+  const fields = ['item','note','generalNote','completionNote'];
+  (db.issues || []).forEach(issue => {
+    fields.forEach(f => { if (issue[f]) issue[f] = sanitizeText(issue[f]); });
+  });
+  return db;
 }
 
 async function submitIssues() {
