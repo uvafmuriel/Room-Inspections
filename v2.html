@@ -458,6 +458,8 @@ async function loadDB() {
     if(!i.assignedTo) i.assignedTo = [];
     else if(typeof i.assignedTo === 'string') i.assignedTo = i.assignedTo ? [i.assignedTo] : [];
   });
+  // Sanitize all text fields to strip encoding corruption
+  sanitizeDB(db);
   return db;
 }
 
