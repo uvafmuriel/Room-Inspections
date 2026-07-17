@@ -2307,7 +2307,7 @@
       "cat": "Other",
       "item": "Missing rocker plaque",
       "note": "",
-      "done": true,
+      "done": false,
       "allClear": false,
       "assignedTo": [],
       "completionNote": "",
