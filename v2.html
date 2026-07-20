@@ -148,7 +148,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 <body>
 <div id="app">
 <div class="topbar">
-  <div class="topbar-logo" style="background:var(--accent);border-radius:6px;padding:4px 8px;font-family:Georgia,serif;font-size:15px;font-weight:700;color:white;letter-spacing:0.5px;flex-shrink:0">UVA</div>
+  <div style="font-family:Georgia,serif;font-size:16px;font-weight:700;color:var(--accent);letter-spacing:1px;flex-shrink:0;padding-right:4px">UVA</div>
   <div class="topbar-title"><h1>Room Inspections</h1><p id="topbar-sub">Lawn &amp; Range · Facilities Management</p></div>
   <div class="mode-toggle">
     <button class="mode-btn active" id="btn-inspect" onclick="setMode('inspect')">Inspect</button>
@@ -383,43 +383,43 @@ const ROOM_CATEGORIES = [
 
 const CATEGORIES = {
   Carpentry: [
-    { icon:'🏠', name:'Paint & Plaster', items:['Touch up paint','Patch and paint','Paint walls/ceiling','Paint door','Windowsill/mantle paint','Exterior paint','Plaster repair','Bubbling/scaling plaster','Water damage'] },
-    { icon:'🚪', name:'Doors', items:['Door knob loose','Missing screws','Needs night latch','Hinge loose/tighten','Latch adjustment','Door dragging','Chain lock missing','Door number missing/broken'] },
-    { icon:'🪟', name:'Windows & Blinds', items:['Blinds broken/replace','Blinds stuck','Missing screen','Window blocks needed','Broken window pane','Window lock broken'] },
-    { icon:'🪑', name:'Furniture', items:['Rocking chair missing','Straight-backed chair worn/replace','Bed repair','Desk repair','Bookshelf repair','Mirror','Mattress replacement needed'] },
-    { icon:'🔥', name:'Fireplace', items:['Ash can missing/broken','Brush missing/broken','Tongs missing/broken','Poker missing/broken','Screen missing/broken','Log rack missing/broken','Holder missing/broken','Shovel missing/broken'] },
-    { icon:'🧹', name:'Other', items:['Command strips — remove','Command strips — patch & paint','Wooden box cover under sink missing/broken','Wood removal needed'] },
-    { icon:'🪵', name:'Floor Condition', items:[], floorCondition: true },
+    { icon:'', name:'Paint & Plaster', items:['Touch up paint','Patch and paint','Paint walls/ceiling','Paint door','Windowsill/mantle paint','Exterior paint','Plaster repair','Bubbling/scaling plaster','Water damage'] },
+    { icon:'', name:'Doors', items:['Door knob loose','Missing screws','Needs night latch','Hinge loose/tighten','Latch adjustment','Door dragging','Chain lock missing','Door number missing/broken'] },
+    { icon:'', name:'Windows & Blinds', items:['Blinds broken/replace','Blinds stuck','Missing screen','Window blocks needed','Broken window pane','Window lock broken'] },
+    { icon:'', name:'Furniture', items:['Rocking chair missing','Straight-backed chair worn/replace','Bed repair','Desk repair','Bookshelf repair','Mirror','Mattress replacement needed'] },
+    { icon:'', name:'Fireplace', items:['Ash can missing/broken','Brush missing/broken','Tongs missing/broken','Poker missing/broken','Screen missing/broken','Log rack missing/broken','Holder missing/broken','Shovel missing/broken'] },
+    { icon:'', name:'Other', items:['Command strips — remove','Command strips — patch & paint','Wooden box cover under sink missing/broken','Wood removal needed'] },
+    { icon:'', name:'Floor Condition', items:[], floorCondition: true },
   ],
   Electrical: [
-    { icon:'💡', name:'Lights', items:['Room lights not working','Lights inside sink enclosure not working'] },
-    { icon:'🔌', name:'Appliances', items:['Refrigerator issue','Microwave issue','Fan not working','Receptacle issue'] },
-    { icon:'🧯', name:'Safety', items:['CO detector issue','Smoke alarm issue','Fire extinguisher issue','Extinguisher tag expired'] },
+    { icon:'', name:'Lights', items:['Room lights not working','Lights inside sink enclosure not working'] },
+    { icon:'', name:'Appliances', items:['Refrigerator issue','Microwave issue','Fan not working','Receptacle issue'] },
+    { icon:'', name:'Safety', items:['CO detector issue','Smoke alarm issue','Fire extinguisher issue','Extinguisher tag expired'] },
   ],
   Plumbing: [
-    { icon:'💧', name:'Water', items:['Leak present','No hot water','No cold water','Low pressure'] },
-    { icon:'🚰', name:'Fixtures', items:['Sink drain issue','Stops issue','AAV issue','Faucet issue'] },
+    { icon:'', name:'Water', items:['Leak present','No hot water','No cold water','Low pressure'] },
+    { icon:'', name:'Fixtures', items:['Sink drain issue','Stops issue','AAV issue','Faucet issue'] },
   ],
   HVAC: [
-    { icon:'🌡️', name:'System', items:['Heating not working','Cooling not working','Filter needs replacement','Vents blocked','Leak from radiator/valves'] },
-    { icon:'📦', name:'AC Equipment', items:['Unit cover missing','Hoses missing','Remote missing'] },
+    { icon:'', name:'System', items:['Heating not working','Cooling not working','Filter needs replacement','Vents blocked','Leak from radiator/valves'] },
+    { icon:'', name:'AC Equipment', items:['Unit cover missing','Hoses missing','Remote missing'] },
   ],
   Admin: [
-    { icon:'🏠', name:'Paint & Plaster', items:['Touch up paint','Patch and paint','Paint walls/ceiling','Paint door','Windowsill/mantle paint','Exterior paint','Plaster repair','Bubbling/scaling plaster','Water damage'] },
-    { icon:'🚪', name:'Doors', items:['Door knob loose','Missing screws','Needs night latch','Hinge loose/tighten','Latch adjustment','Door dragging','Chain lock missing','Door number missing/broken'] },
-    { icon:'🪟', name:'Windows & Blinds', items:['Blinds broken/replace','Blinds stuck','Missing screen','Window blocks needed','Broken window pane','Window lock broken'] },
-    { icon:'🪑', name:'Furniture', items:['Rocking chair missing','Straight-backed chair worn/replace','Bed repair','Desk repair','Bookshelf repair','Mirror','Mattress replacement needed'] },
-    { icon:'🔥', name:'Fireplace', items:['Ash can missing/broken','Brush missing/broken','Tongs missing/broken','Poker missing/broken','Screen missing/broken','Log rack missing/broken','Holder missing/broken','Shovel missing/broken'] },
-    { icon:'🧹', name:'Other', items:['Command strips — remove','Command strips — patch & paint','Wooden box cover under sink missing/broken','Wood removal needed'] },
-    { icon:'🪵', name:'Floor Condition', items:[], floorCondition: true },
-    { icon:'💡', name:'Lights', items:['Room lights not working','Lights inside sink enclosure not working'] },
-    { icon:'🔌', name:'Appliances', items:['Refrigerator issue','Microwave issue','Fan not working','Receptacle issue'] },
-    { icon:'🧯', name:'Safety', items:['CO detector issue','Smoke alarm issue','Fire extinguisher issue','Extinguisher tag expired'] },
-    { icon:'💧', name:'Water', items:['Leak present','No hot water','No cold water','Low pressure'] },
-    { icon:'🚰', name:'Fixtures', items:['Sink drain issue','Stops issue','AAV issue','Faucet issue'] },
-    { icon:'🌡️', name:'System', items:['Heating not working','Cooling not working','Filter needs replacement','Vents blocked','Leak from radiator/valves'] },
-    { icon:'📦', name:'AC Equipment', items:['Unit cover missing','Hoses missing','Remote missing'] },
-    { icon:'🔒', name:'Bike Lock & Cable', items:[], bikeLock: true },
+    { icon:'', name:'Paint & Plaster', items:['Touch up paint','Patch and paint','Paint walls/ceiling','Paint door','Windowsill/mantle paint','Exterior paint','Plaster repair','Bubbling/scaling plaster','Water damage'] },
+    { icon:'', name:'Doors', items:['Door knob loose','Missing screws','Needs night latch','Hinge loose/tighten','Latch adjustment','Door dragging','Chain lock missing','Door number missing/broken'] },
+    { icon:'', name:'Windows & Blinds', items:['Blinds broken/replace','Blinds stuck','Missing screen','Window blocks needed','Broken window pane','Window lock broken'] },
+    { icon:'', name:'Furniture', items:['Rocking chair missing','Straight-backed chair worn/replace','Bed repair','Desk repair','Bookshelf repair','Mirror','Mattress replacement needed'] },
+    { icon:'', name:'Fireplace', items:['Ash can missing/broken','Brush missing/broken','Tongs missing/broken','Poker missing/broken','Screen missing/broken','Log rack missing/broken','Holder missing/broken','Shovel missing/broken'] },
+    { icon:'', name:'Other', items:['Command strips — remove','Command strips — patch & paint','Wooden box cover under sink missing/broken','Wood removal needed'] },
+    { icon:'', name:'Floor Condition', items:[], floorCondition: true },
+    { icon:'', name:'Lights', items:['Room lights not working','Lights inside sink enclosure not working'] },
+    { icon:'', name:'Appliances', items:['Refrigerator issue','Microwave issue','Fan not working','Receptacle issue'] },
+    { icon:'', name:'Safety', items:['CO detector issue','Smoke alarm issue','Fire extinguisher issue','Extinguisher tag expired'] },
+    { icon:'', name:'Water', items:['Leak present','No hot water','No cold water','Low pressure'] },
+    { icon:'', name:'Fixtures', items:['Sink drain issue','Stops issue','AAV issue','Faucet issue'] },
+    { icon:'', name:'System', items:['Heating not working','Cooling not working','Filter needs replacement','Vents blocked','Leak from radiator/valves'] },
+    { icon:'', name:'AC Equipment', items:['Unit cover missing','Hoses missing','Remote missing'] },
+    { icon:'', name:'Bike Lock & Cable', items:[], bikeLock: true },
   ],
 };
 
@@ -707,7 +707,7 @@ function buildIssueForm(trade) {
     const card = document.createElement('div');
     card.className = 'issue-card';
     const sid = safeId(cat.name);
-    card.innerHTML = `<div class="issue-card-header"><span class="cat-icon">${cat.icon}</span><span class="cat-name">${cat.name}</span></div><div class="issue-items" id="items-${sid}"></div>`;
+    card.innerHTML = `<div class="issue-card-header"><span class="cat-name">${cat.name}</span></div><div class="issue-items" id="items-${sid}"></div>`;
     const itemsDiv = card.querySelector(`#items-${sid}`);
     if(cat.bikeLock) {
       // Special bike lock UI — checkboxes for lock and/or cable
@@ -973,7 +973,7 @@ async function submitIssues() {
     buildRoomChips(activeCat);
     document.getElementById('screen-issues').style.display = 'none';
     document.getElementById('screen-setup').style.display = 'block';
-    alert(selected.length===0 ? '✅ All clear logged!' : `✅ ${selected.length} issue${selected.length>1?'s':''} saved!`);
+    alert(selected.length===0 ? 'All clear logged!' : `✓ ${selected.length} issue${selected.length>1?'s':''} saved!`);
   } catch(e) { hideSpinner(); alert('Save failed: '+e.message); }
 }
 
@@ -1557,7 +1557,7 @@ async function startReset() {
     hideSpinner();
     document.getElementById('reset-panel').style.display = 'none';
     renderDashboard();
-    alert('✅ Data archived and database reset successfully.');
+    alert('✓ Data archived and database reset successfully.');
   } catch(e) { hideSpinner(); alert('Failed: ' + e.message); }
 }
 
