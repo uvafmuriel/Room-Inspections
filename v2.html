@@ -47,6 +47,8 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .room-chip.trade-done::after{content:'✓';position:absolute;top:1px;right:3px;font-size:8px;font-weight:700;color:var(--green)}
 .room-chip.has-issues{border-color:var(--amber);background:var(--amber-light);color:var(--amber-text)}
 .room-chip.has-issues.selected,.room-chip.trade-done.selected{background:#232D4B;border-color:#232D4B;color:#FFFFFF}
+.room-chip.all-clear{border-color:#5B92C4;background:#EEF4FA;color:#1a4a72}
+.room-chip.all-clear::after{content:'✓';position:absolute;top:1px;right:3px;font-size:8px;font-weight:700;color:#5B92C4}
 .start-btn{width:100%;margin-top:20px;padding:15px;background:var(--accent);color:white;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;border:none;border-radius:var(--radius);cursor:pointer}
 .room-header{background:#232D4B;color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px}
 .room-header-info{flex:1}
@@ -146,13 +148,17 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 <body>
 <div id="app">
 <div class="topbar">
-  <div class="topbar-logo">
-    <svg viewBox="0 0 18 18" fill="none"><rect x="2" y="9" width="14" height="7" rx="1.5" fill="white" opacity=".9"/><path d="M1 9.5L9 3l8 6.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div class="topbar-logo" style="background:none;padding:0;width:auto">
+    <svg viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg" height="28">
+      <!-- UVA "V" monogram simplified -->
+      <text x="0" y="26" font-family="Georgia,serif" font-size="28" font-weight="700" fill="#E57200">V</text>
+      <text x="18" y="26" font-family="Georgia,serif" font-size="14" font-weight="400" fill="white">UVA</text>
+    </svg>
   </div>
-  <div class="topbar-title"><h1>Room Inspections</h1><p id="topbar-sub">Lawn & Range v2</p></div>
+  <div class="topbar-title"><h1>Room Inspections</h1><p id="topbar-sub">Lawn &amp; Range · Facilities Management</p></div>
   <div class="mode-toggle">
     <button class="mode-btn active" id="btn-inspect" onclick="setMode('inspect')">Inspect</button>
-    <button class="mode-btn" id="btn-manage" onclick="setMode('manage')">Manage</button>
+    <button class="mode-btn" id="btn-manage" onclick="setMode('manage')">Manage<span id="manage-badge" style="display:none;margin-left:5px;background:var(--accent);color:white;border-radius:99px;font-size:10px;font-weight:700;padding:1px 6px;vertical-align:middle"></span></button>
   </div>
 </div>
 
@@ -309,6 +315,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
         <button class="filter-pill" onclick="setFilter('trade','Electrical',this)">Electrical</button>
         <button class="filter-pill" onclick="setFilter('trade','Plumbing',this)">Plumbing</button>
         <button class="filter-pill" onclick="setFilter('trade','HVAC',this)">HVAC</button>
+        <button class="filter-pill" onclick="setFilter('trade','Admin',this)">Admin</button>
       </div>
     </div>
     <div class="filter-section" id="filter-cat-section" style="display:none">
@@ -436,6 +443,7 @@ const TRADE_PEOPLE = {
   Electrical: ['Morgan','Brittany','Anthony','Jalisa','Richard'],
   Plumbing: ['Tim','Cris','Cody','Duane','Leo'],
   HVAC: ['Jason','Wayne'],
+  Admin: ['Randy','Uriel','Jacob'],
 };
 
 const SUPERVISORS = {
@@ -528,7 +536,7 @@ function setMode(mode) {
   document.getElementById('btn-manage').classList.toggle('active', mode==='manage');
   document.getElementById('page-inspect').classList.toggle('active', mode==='inspect');
   document.getElementById('page-manage').classList.toggle('active', mode==='manage');
-  if(mode==='manage') loadDB().then(()=>{ buildAssigneeFilter(); renderDashboard(); });
+  if(mode==='manage') loadDB().then(()=>{ buildAssigneeFilter(); restoreCatPills(); renderDashboard(); });
 }
 
 // ── Setup ──────────────────────────────────────────────────────────────────
@@ -559,8 +567,10 @@ function buildRoomChips(ci) {
     // Check if this trade has submitted for this room
     const submitted = db.issues.some(i => i.room===r && i.area===area && i.trade===trade);
     const hasOpen = db.issues.some(i => i.room===r && i.area===area && i.trade===trade && !i.done && !i.allClear);
+    const allClear = db.issues.some(i => i.room===r && i.area===area && i.trade===trade && i.allClear);
     if(submitted && !hasOpen) btn.classList.add('trade-done');
     else if(hasOpen) btn.classList.add('has-issues');
+    else if(allClear) btn.classList.add('all-clear');
     btn.onclick = () => {
       document.querySelectorAll('.room-chip').forEach(c=>c.classList.remove('selected'));
       btn.classList.add('selected');
@@ -988,6 +998,24 @@ const TRADE_CATS = {
   Admin: ['Paint & Plaster','Doors','Windows & Blinds','Furniture','Fireplace','Other','Floor Condition','Lights','Appliances','Safety','Water','Fixtures','System','AC Equipment','Bike Lock & Cable'],
 };
 
+function restoreCatPills() {
+  const trade = filters.trade;
+  const catSection = document.getElementById('filter-cat-section');
+  const catBar = document.getElementById('filter-cat');
+  if(!catSection || !catBar) return;
+  if(trade === 'all') { catSection.style.display = 'none'; return; }
+  catSection.style.display = 'block';
+  const cats = TRADE_CATS[trade] || [];
+  catBar.innerHTML = `<button class="filter-pill ${filters.cat==='all'?'active':''}" onclick="setFilter('cat','all',this)">All</button>`;
+  cats.forEach(cat => {
+    const b = document.createElement('button');
+    b.className = 'filter-pill' + (filters.cat===cat?' active':'');
+    b.textContent = cat;
+    b.onclick = () => setFilter('cat', cat, b);
+    catBar.appendChild(b);
+  });
+}
+
 function setFilter(type, val, btn) {
   filters[type] = val;
   const container = btn.closest('.filter-pills') || btn.parentElement;
@@ -1063,9 +1091,12 @@ function renderDashboard() {
   // Stats reflect current trade filter
   const tradeFilter = filters.trade;
   const statIssues = db.issues.filter(i => !i.allClear && (tradeFilter==='all' || i.trade===tradeFilter));
+  const openCount = db.issues.filter(i=>!i.allClear&&!i.done).length;
   document.getElementById('stat-total').textContent = statIssues.length;
   document.getElementById('stat-open').textContent = statIssues.filter(i=>!i.done).length;
   document.getElementById('stat-done').textContent = statIssues.filter(i=>i.done).length;
+  const badge = document.getElementById('manage-badge');
+  if(badge){ if(openCount>0){badge.textContent=openCount;badge.style.display='inline';}else{badge.style.display='none';} }
 
   const list = document.getElementById('dashboard-list');
   list.innerHTML = '';
@@ -1425,6 +1456,18 @@ function editSubmission(room, area, trade) {
     }
   });
 
+  // Restore floor condition if present
+  const floorIssue = roomIssues.find(i => i.cat === 'Floor Condition');
+  if(floorIssue && floorIssue.item) {
+    const floorItem = floorIssue.item;
+    const typeMatch = floorItem.match(/^(Original\/Waxed|Modern\/Poly)/);
+    const gradeMatch = floorItem.match(/Grade (\d+)/);
+    if(typeMatch) setTimeout(() => selectFloorType(typeMatch[1]), 100);
+    if(gradeMatch) setTimeout(() => selectFloorGrade(parseInt(gradeMatch[1])), 150);
+    const floorNoteEl = document.getElementById('floor-note');
+    if(floorNoteEl && floorIssue.note) floorNoteEl.value = floorIssue.note;
+  }
+
   // Store edit context so submit overwrites instead of adding
   window._editContext = { room, area, trade };
 
@@ -1450,6 +1493,7 @@ function openWOModal() {
   document.getElementById('phase-electrical').value = pc['Electrical'] || '';
   document.getElementById('phase-plumbing').value = pc['Plumbing'] || '';
   document.getElementById('phase-hvac').value = pc['HVAC'] || '';
+  document.getElementById('phase-admin').value = pc['Admin'] || '';
   document.getElementById('wo-modal').classList.add('visible');
 }
 
@@ -1472,6 +1516,7 @@ async function saveWOPhase() {
       'Electrical': document.getElementById('phase-electrical').value.trim(),
       'Plumbing': document.getElementById('phase-plumbing').value.trim(),
       'HVAC': document.getElementById('phase-hvac').value.trim(),
+      'Admin': document.getElementById('phase-admin').value.trim(),
     };
     await saveDB();
     hideSpinner();
@@ -1613,12 +1658,19 @@ function exportExcel() {
   const blob = new Blob([html], {type:'application/vnd.ms-excel;charset=utf-8'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `LawnRange_Inspections_${new Date().toLocaleDateString('en-US').replace(/\//g,'-')}.xls`;
+  const areaPart = filters.area !== 'all' ? '_' + filters.area.replace(/ /g,'') : '';
+  const tradePart = filters.trade !== 'all' ? '_' + filters.trade : '';
+  a.download = `LawnRange_Inspections${areaPart}${tradePart}_${new Date().toLocaleDateString('en-US').replace(/\//g,'-')}.xls`;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
 }
 
 // ── Init ───────────────────────────────────────────────────────────────────
-loadDB().then(() => buildRoomChips(0));
+loadDB().then(() => {
+  buildRoomChips(0);
+  const openCount = db.issues.filter(i=>!i.allClear&&!i.done).length;
+  const badge = document.getElementById('manage-badge');
+  if(badge){ if(openCount>0){badge.textContent=openCount;badge.style.display='inline';}else{badge.style.display='none';} }
+});
 </script>
 </body>
 </html>
