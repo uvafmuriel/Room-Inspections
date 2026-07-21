@@ -1018,6 +1018,26 @@ function goBack() {
   document.getElementById('screen-setup').style.display = 'block';
 }
 
+function showBanner(msg, type) {
+  let b = document.getElementById('sync-banner');
+  if(!b) {
+    b = document.createElement('div');
+    b.id = 'sync-banner';
+    b.style.cssText = 'position:fixed;top:56px;left:0;right:0;z-index:9999;padding:10px 16px;font-size:13px;font-weight:600;text-align:center;transition:opacity .5s ease';
+    document.body.appendChild(b);
+  }
+  const styles = {
+    green:'background:#e6f2e8;color:#265232;border-bottom:2px solid #b2d9b8',
+    amber:'background:#fdf3dc;color:#7a520f;border-bottom:2px solid #f0d080',
+    red:'background:#fde8e8;color:#8b0000;border-bottom:2px solid #f0a0a0'
+  };
+  b.setAttribute('style', 'position:fixed;top:56px;left:0;right:0;z-index:9999;padding:10px 16px;font-size:13px;font-weight:600;text-align:center;transition:opacity .5s ease;' + (styles[type]||styles.green));
+  b.textContent = msg;
+  b.style.opacity = '1';
+  clearTimeout(b._t);
+  b._t = setTimeout(() => { b.style.opacity='0'; }, 5000);
+}
+
 function showSpinner(msg){ document.getElementById('submit-msg').textContent=msg; document.getElementById('submit-overlay').classList.add('visible'); }
 function hideSpinner(){ document.getElementById('submit-overlay').classList.remove('visible'); }
 
