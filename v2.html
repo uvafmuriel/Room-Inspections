@@ -473,9 +473,29 @@ let openMenuId = null;
 async function loadDB() {
   const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${DB_PATH}`,
     { headers:{ Authorization:`token ${GITHUB_TOKEN}`, 'Cache-Control':'no-cache' }, cache:'no-store' });
+  if(!resp.ok) throw new Error(`Failed to load DB: HTTP ${resp.status}`);
   const data = await resp.json();
+  if(!data.content) throw new Error('DB response missing content');
   dbSha = data.sha;
-  db = JSON.parse(atob(data.content.replace(/\n/g,'')));
+  // Decode base64 via TextDecoder to correctly handle UTF-8 (atob alone breaks multi-byte chars)
+  const b64 = data.content.replace(/\n/g,'');
+  const binaryStr = atob(b64);
+  const bytes = new Uint8Array(binaryStr.length);
+  for(let i=0; i<binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
+  const jsonStr = new TextDecoder('utf-8').decode(bytes);
+  if(!jsonStr || jsonStr.trim() === '') throw new Error('DB file is empty');
+  try {
+    db = JSON.parse(jsonStr);
+  } catch(parseErr) {
+    // GitHub returned corrupt/empty data — try localStorage backup
+    const backup = localStorage.getItem('db_backup');
+    if(backup) {
+      console.warn('GitHub DB corrupt, restoring from local backup');
+      db = JSON.parse(backup);
+    } else {
+      throw new Error('DB corrupted and no local backup available');
+    }
+  }
   // Normalize WO/Phase config
   if(!db.woConfig) db.woConfig = { 'West Lawn':'', 'West Range':'', 'East Lawn':'', 'East Range':'' };
   if(!db.phaseConfig) db.phaseConfig = { Carpentry:'', Electrical:'', Plumbing:'', HVAC:'' };
@@ -502,6 +522,8 @@ function dbToBase64() {
 }
 
 async function saveDB(retries=3) {
+  // Always save a local backup first — recoverable even if network fails
+  try { localStorage.setItem('db_backup', JSON.stringify(db)); } catch(e) {}
   for(let attempt=0; attempt<retries; attempt++) {
     // Re-encode on every attempt (including after a reload on conflict)
     const content = dbToBase64();
@@ -1666,6 +1688,22 @@ loadDB().then(() => {
   const openCount = db.issues.filter(i=>!i.allClear&&!i.done).length;
   const badge = document.getElementById('manage-badge');
   if(badge){ if(openCount>0){badge.textContent=openCount;badge.style.display='inline';}else{badge.style.display='none';} }
+  // Check for pending unsaved data from a previous failed save
+  const pending = localStorage.getItem('pending_save');
+  if(pending) {
+    try {
+      const pendingDb = JSON.parse(pending);
+      if(pendingDb.issues && pendingDb.issues.length > db.issues.length) {
+        db = pendingDb;
+        saveDB().then(() => {
+          localStorage.removeItem('pending_save');
+          showBanner('Pending data synced to server.', 'green');
+        }).catch(() => {});
+      } else {
+        localStorage.removeItem('pending_save');
+      }
+    } catch(e) { localStorage.removeItem('pending_save'); }
+  }
 });
 </script>
 </body>
