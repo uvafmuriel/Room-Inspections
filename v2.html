@@ -472,7 +472,7 @@ let openMenuId = null;
 // ── GitHub DB ──────────────────────────────────────────────────────────────
 async function loadDB() {
   const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${DB_PATH}`,
-    { headers:{ Authorization:`token ${GITHUB_TOKEN}`, 'Cache-Control':'no-cache' }, cache:'no-store' });
+    { headers:{ Authorization:`token ${GITHUB_TOKEN}` }, cache:'no-store' });
   if(!resp.ok) throw new Error(`Failed to load DB: HTTP ${resp.status}`);
   const data = await resp.json();
   if(!data.content) throw new Error('DB response missing content');
