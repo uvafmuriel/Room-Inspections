@@ -477,23 +477,28 @@ async function loadDB() {
   const data = await resp.json();
   if(!data.content) throw new Error('DB response missing content');
   dbSha = data.sha;
-  // Decode base64 via TextDecoder to correctly handle UTF-8 (atob alone breaks multi-byte chars)
+  // Decode: TextEncoder writes UTF-8 base64, TextDecoder reads it back correctly
   const b64 = data.content.replace(/\n/g,'');
-  const binaryStr = atob(b64);
-  const bytes = new Uint8Array(binaryStr.length);
-  for(let i=0; i<binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
-  const jsonStr = new TextDecoder('utf-8').decode(bytes);
-  if(!jsonStr || jsonStr.trim() === '') throw new Error('DB file is empty');
+  let jsonStr;
   try {
-    db = JSON.parse(jsonStr);
-  } catch(parseErr) {
-    // GitHub returned corrupt/empty data — try localStorage backup
+    const binaryStr = atob(b64);
+    const bytes = new Uint8Array(binaryStr.length);
+    for(let i=0; i<binaryStr.length; i++) bytes[i] = binaryStr.charCodeAt(i);
+    jsonStr = new TextDecoder('utf-8').decode(bytes);
+  } catch(decodeErr) {
+    jsonStr = null;
+  }
+  if(!jsonStr || jsonStr.trim() === '' || jsonStr.trim() === 'null') {
     const backup = localStorage.getItem('db_backup');
-    if(backup) {
-      console.warn('GitHub DB corrupt, restoring from local backup');
-      db = JSON.parse(backup);
-    } else {
-      throw new Error('DB corrupted and no local backup available');
+    if(backup) { console.warn('GitHub DB empty/corrupt, using local backup'); db = JSON.parse(backup); }
+    else throw new Error('DB empty and no local backup');
+  } else {
+    try {
+      db = JSON.parse(jsonStr);
+    } catch(parseErr) {
+      const backup = localStorage.getItem('db_backup');
+      if(backup) { console.warn('DB parse failed, using local backup'); db = JSON.parse(backup); }
+      else throw new Error('DB parse failed: ' + parseErr.message);
     }
   }
   // Normalize WO/Phase config
