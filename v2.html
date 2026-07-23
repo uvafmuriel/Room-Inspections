@@ -1008,13 +1008,9 @@ async function submitIssues() {
     showBanner(selected.length===0 ? 'All clear logged!' : `✓ ${selected.length} issue${selected.length>1?'s':''} saved!`, 'green');
   } catch(e) {
     hideSpinner();
-    // Save locally so data isn't lost if network failed
-    try {
-      localStorage.setItem('pending_save', JSON.stringify(db));
-      showBanner('No connection — saved locally. Will sync when back online.', 'amber');
-    } catch(le) {
-      alert('Save failed: ' + e.message);
-    }
+    // Show the real error so we can diagnose
+    showBanner('Save error: ' + e.message, 'red');
+    try { localStorage.setItem('pending_save', JSON.stringify(db)); } catch(le) {}
     // Auto-retry when connectivity returns
     window.addEventListener('online', async function retryPending() {
       const pending = localStorage.getItem('pending_save');
