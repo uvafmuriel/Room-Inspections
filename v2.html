@@ -516,32 +516,46 @@ async function loadDB() {
 
 
 
-async function saveDB(retries=3) {
-  // Always save a local backup first — recoverable even if network fails
+async function saveDB() {
+  // Always backup locally first
   try { localStorage.setItem('db_backup', JSON.stringify(db)); } catch(e) {}
-  for(let attempt=0; attempt<retries; attempt++) {
-    // Re-encode on every attempt (including after a reload on conflict)
-    const content = dbToBase64();
-    const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${DB_PATH}`, {
-      method:'PUT',
-      headers:{ Authorization:`token ${GITHUB_TOKEN}`, 'Content-Type':'application/json' },
-      body: JSON.stringify({ message:'Update inspection data', content, sha:dbSha })
-    });
-    if(resp.status === 409 || resp.status === 422) {
-      console.warn(`Save conflict (attempt ${attempt+1}), re-fetching...`);
-      try { await loadDB(); } catch(e) { console.warn('Re-fetch failed, retrying with cached sha'); }
-      continue;
+
+  // Step 1: Get the current SHA fresh from GitHub
+  const shaResp = await fetch(`https://api.github.com/repos/${REPO}/contents/${DB_PATH}`, {
+    headers:{ Authorization:`token ${GITHUB_TOKEN}`, 'Cache-Control':'no-cache' },
+    cache:'no-store'
+  });
+  if(!shaResp.ok) throw new Error(`Could not fetch current SHA: HTTP ${shaResp.status}`);
+  const shaData = await shaResp.json();
+  const freshSha = shaData.sha;
+
+  // Step 2: Merge — keep any issues from server not in our local db
+  try {
+    const serverRaw = atob(shaData.content.replace(/\n/g,''));
+    const serverBytes = new Uint8Array(serverRaw.length);
+    for(let i=0;i<serverRaw.length;i++) serverBytes[i]=serverRaw.charCodeAt(i);
+    const serverDb = JSON.parse(new TextDecoder('utf-8').decode(serverBytes));
+    if(serverDb.issues) {
+      const localIds = new Set(db.issues.map(i=>i.id));
+      const newFromServer = serverDb.issues.filter(i=>!localIds.has(i.id));
+      if(newFromServer.length) db.issues.push(...newFromServer);
     }
-    if(!resp.ok) {
-      const err = await resp.json().catch(()=>({}));
-      throw new Error(err.message || `HTTP ${resp.status}`);
-    }
-    const saved = await resp.json();
-    dbSha = saved.content.sha;
-    try { localStorage.removeItem('pending_save'); } catch(e) {}
-    return;
+  } catch(e) { /* merge failed — proceed with local data */ }
+
+  // Step 3: Write
+  const content = dbToBase64();
+  const putResp = await fetch(`https://api.github.com/repos/${REPO}/contents/${DB_PATH}`, {
+    method:'PUT',
+    headers:{ Authorization:`token ${GITHUB_TOKEN}`, 'Content-Type':'application/json' },
+    body: JSON.stringify({ message:'Update inspection data', content, sha:freshSha })
+  });
+  if(!putResp.ok) {
+    const err = await putResp.json().catch(()=>({}));
+    throw new Error(err.message || `HTTP ${putResp.status}`);
   }
-  throw new Error('Save failed after retries - please try again');
+  const saved = await putResp.json();
+  dbSha = saved.content.sha;
+  try { localStorage.removeItem('pending_save'); } catch(e) {}
 }
 
 // ── Mode ───────────────────────────────────────────────────────────────────
