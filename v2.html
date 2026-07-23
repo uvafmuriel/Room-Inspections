@@ -535,7 +535,7 @@ async function saveDB() {
       headers:{ Authorization:`token ${GITHUB_TOKEN}`, 'Content-Type':'application/json' },
       body: JSON.stringify({ message:'Update inspection data', content:content2, sha:dbSha })
     });
-    if(!resp2.ok) { const e = await resp2.json().catch(()=>({}))); throw new Error(e.message||`HTTP ${resp2.status}`); }
+    if(!resp2.ok) { const e = await resp2.json().catch(()=>({})); throw new Error(e.message||`HTTP ${resp2.status}`); }
     const saved2 = await resp2.json();
     dbSha = saved2.content.sha;
   } else if(!resp.ok) {
