@@ -998,8 +998,11 @@ async function submitIssues() {
     showBanner(selected.length===0 ? 'All clear logged!' : `✓ ${selected.length} issue${selected.length>1?'s':''} saved!`, 'green');
   } catch(e) {
     hideSpinner();
-    // Show the real error so we can diagnose
-    showBanner('Save error: ' + e.message, 'red');
+    // Show detailed diagnostics so we can pin down the real cause
+    const diag = `${e.name||'Error'}: ${e.message} | online=${navigator.onLine} | conn=${navigator.connection?navigator.connection.effectiveType:'?'}`;
+    showBanner('Save error: ' + diag, 'red');
+    console.error('SAVE ERROR DETAIL', e, e.stack);
+    try { localStorage.setItem('last_error', diag + ' @ ' + new Date().toISOString()); } catch(x){}
     try { localStorage.setItem('pending_save', JSON.stringify(db)); } catch(le) {}
     // Auto-retry when connectivity returns
     window.addEventListener('online', async function retryPending() {
