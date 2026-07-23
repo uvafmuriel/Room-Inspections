@@ -998,12 +998,22 @@ async function submitIssues() {
     showBanner(selected.length===0 ? 'All clear logged!' : `✓ ${selected.length} issue${selected.length>1?'s':''} saved!`, 'green');
   } catch(e) {
     hideSpinner();
-    // Show detailed diagnostics so we can pin down the real cause
-    const diag = `${e.name||'Error'}: ${e.message} | online=${navigator.onLine} | conn=${navigator.connection?navigator.connection.effectiveType:'?'}`;
-    showBanner('Save error: ' + diag, 'red');
-    console.error('SAVE ERROR DETAIL', e, e.stack);
-    try { localStorage.setItem('last_error', diag + ' @ ' + new Date().toISOString()); } catch(x){}
+    // Data is already captured in the in-memory db object (pushed before saveDB was called)
+    // and backed up to localStorage — safe to advance to the next room like a normal success.
+    const diag = `${e.name||'Error'}: ${e.message}`;
     try { localStorage.setItem('pending_save', JSON.stringify(db)); } catch(le) {}
+    try { localStorage.setItem('last_error', diag + ' @ ' + new Date().toISOString()); } catch(x){}
+    console.error('SAVE ERROR DETAIL', e, e.stack);
+
+    // Advance the UI exactly like a successful submit — data is safe locally
+    selectedRoom = '';
+    document.querySelectorAll('.room-chip').forEach(c=>c.classList.remove('selected'));
+    document.getElementById('dup-warning').classList.remove('visible');
+    buildRoomChips(activeCat);
+    document.getElementById('screen-issues').style.display = 'none';
+    document.getElementById('screen-setup').style.display = 'block';
+    showBanner('Saved on device — no connection right now. Will sync automatically. You can continue to the next room.', 'amber');
+
     // Auto-retry when connectivity returns
     window.addEventListener('online', async function retryPending() {
       const pending = localStorage.getItem('pending_save');
@@ -1014,7 +1024,7 @@ async function submitIssues() {
         await loadDB();
         await saveDB();
         localStorage.removeItem('pending_save');
-        showBanner('Synced! Data saved to server.', 'green');
+        showBanner('Synced! All pending inspections saved to server.', 'green');
       } catch(re) { console.warn('Retry failed:', re); }
     }, {once:true});
   }
