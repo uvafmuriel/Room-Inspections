@@ -529,7 +529,7 @@ async function saveDB(retries=3) {
     });
     if(resp.status === 409 || resp.status === 422) {
       console.warn(`Save conflict (attempt ${attempt+1}), re-fetching...`);
-      await loadDB();
+      try { await loadDB(); } catch(e) { console.warn('Re-fetch failed, retrying with cached sha'); }
       continue;
     }
     if(!resp.ok) {
@@ -961,7 +961,6 @@ async function submitIssues() {
   const timestamp = now.toLocaleString('en-US',{month:'numeric',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
   showSpinner('Saving...');
   try {
-    await loadDB();
     const generalNote = document.getElementById('general-note')?.value.trim() || '';
     // If editing, remove old issues first and mark edit
     const wasEdited = !!window._editContext;
