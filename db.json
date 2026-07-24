@@ -4304,10 +4304,28 @@
       "done": true,
       "allClear": true,
       "assignedTo": []
+    },
+    {
+      "id": "1784900554683-jcrosdffhlf-dqlqcma8m86",
+      "room": "4",
+      "area": "East Range",
+      "trade": "Admin",
+      "inspector": "Randy",
+      "timestamp": "7/24/2026, 9:42 AM",
+      "cat": "Floor Condition",
+      "item": "Modern/Poly finish, Grade 5/5",
+      "note": "Floor was replaced in 2024",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "",
+      "editedBy": "",
+      "editedAt": ""
     }
   ],
   "assignments": [],
-  "lastUpdated": "7/24/2026, 9:37 AM",
+  "lastUpdated": "7/24/2026, 9:42 AM",
   "woConfig": {
     "West Lawn": "",
     "West Range": "",
