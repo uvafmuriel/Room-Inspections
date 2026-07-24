@@ -5556,10 +5556,28 @@
       "generalNote": "",
       "editedBy": "Uriel",
       "editedAt": "7/24/2026, 2:56 PM"
+    },
+    {
+      "id": "1784919469293-exbz35u0nhg-y03e4wllkws",
+      "room": "12",
+      "area": "East Range",
+      "trade": "Admin",
+      "inspector": "Uriel",
+      "timestamp": "7/24/2026, 2:57 PM",
+      "cat": "Floor Condition",
+      "item": "Modern/Poly finish, Grade 3/5",
+      "note": "Remove all tape off west wall trim and floor. Patch and paint is needed",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "",
+      "editedBy": "",
+      "editedAt": ""
     }
   ],
   "assignments": [],
-  "lastUpdated": "7/24/2026, 2:56 PM",
+  "lastUpdated": "7/24/2026, 2:57 PM",
   "woConfig": {
     "West Lawn": "",
     "West Range": "",
