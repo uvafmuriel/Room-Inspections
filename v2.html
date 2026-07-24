@@ -516,9 +516,15 @@ async function loadDB() {
 
 
 
-async function saveDB() {
+async function saveDB(newIssueIds) {
   // Backup locally first
   try { localStorage.setItem('db_backup', JSON.stringify(db)); } catch(e) {}
+
+  // Remember exactly which issue objects THIS submission is adding, by reference,
+  // so that if a conflict forces a reload, we can re-attach them afterward instead
+  // of silently losing them when the fresh server copy replaces `db`.
+  const idSet = new Set(newIssueIds || []);
+  const myNewIssues = db.issues.filter(i => idSet.has(i.id));
 
   const content = dbToBase64();
   const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${DB_PATH}`, {
@@ -527,8 +533,13 @@ async function saveDB() {
     body: JSON.stringify({ message:'Update inspection data', content, sha:dbSha })
   });
   if(resp.status === 409 || resp.status === 422) {
-    // SHA stale — reload db then retry once
+    // SHA stale — someone else saved in between. Reload their latest version,
+    // then re-attach OUR new issues on top before saving again, so nothing is lost.
     await loadDB();
+    if(myNewIssues.length) {
+      const existingIds = new Set(db.issues.map(i => i.id));
+      myNewIssues.forEach(iss => { if(!existingIds.has(iss.id)) db.issues.push(iss); });
+    }
     const content2 = dbToBase64();
     const resp2 = await fetch(`https://api.github.com/repos/${REPO}/contents/${DB_PATH}`, {
       method:'PUT',
@@ -973,20 +984,25 @@ async function submitIssues() {
       db.issues = db.issues.filter(i => !(i.room===eRoom && i.area===eArea && i.trade===eTrade && !i.allClear));
       window._editContext = null;
     }
+    const justAddedIds = [];
     if(selected.length===0) {
-      db.issues.push({ id:Date.now().toString(), room:selectedRoom, area:selectedArea, trade,
+      const allClearId = 'ac-' + Date.now().toString();
+      db.issues.push({ id:allClearId, room:selectedRoom, area:selectedArea, trade,
         inspector, timestamp, cat:'General', item:'No issues', note:generalNote, done:true, allClear:true, assignedTo:[] });
+      justAddedIds.push(allClearId);
     } else {
       selected.forEach(([,v]) => {
-        db.issues.push({ id:`${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`,
+        const newId = `${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+        db.issues.push({ id:newId,
           room:selectedRoom, area:selectedArea, trade, inspector, timestamp,
           cat:v.cat, item:sanitizeText(v.item), note:sanitizeText(v.note), done:false, allClear:false,
           assignedTo:[], completionNote:'', generalNote:sanitizeText(generalNote),
           editedBy: wasEdited ? inspector : '', editedAt: wasEdited ? timestamp : '' });
+        justAddedIds.push(newId);
       });
     }
     db.lastUpdated = timestamp;
-    await saveDB();
+    await saveDB(justAddedIds);
     hideSpinner();
     selectedRoom = '';
     document.querySelectorAll('.room-chip').forEach(c=>c.classList.remove('selected'));
