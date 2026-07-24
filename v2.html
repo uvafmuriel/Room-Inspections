@@ -516,15 +516,12 @@ async function loadDB() {
 
 
 
-async function saveDB(newIssueIds) {
-  // Backup locally first
+// mutateOnConflict: optional function(freshDb) that re-applies THIS caller's
+// intended change on top of the latest server data if a save conflict occurs.
+// Every function that changes db must pass one — otherwise a conflict-triggered
+// reload will silently discard whatever that function was trying to save.
+async function saveDB(mutateOnConflict) {
   try { localStorage.setItem('db_backup', JSON.stringify(db)); } catch(e) {}
-
-  // Remember exactly which issue objects THIS submission is adding, by reference,
-  // so that if a conflict forces a reload, we can re-attach them afterward instead
-  // of silently losing them when the fresh server copy replaces `db`.
-  const idSet = new Set(newIssueIds || []);
-  const myNewIssues = db.issues.filter(i => idSet.has(i.id));
 
   const content = dbToBase64();
   const resp = await fetch(`https://api.github.com/repos/${REPO}/contents/${DB_PATH}`, {
@@ -533,13 +530,10 @@ async function saveDB(newIssueIds) {
     body: JSON.stringify({ message:'Update inspection data', content, sha:dbSha })
   });
   if(resp.status === 409 || resp.status === 422) {
-    // SHA stale — someone else saved in between. Reload their latest version,
-    // then re-attach OUR new issues on top before saving again, so nothing is lost.
+    // Someone else saved first. Reload their latest data, then re-apply
+    // OUR intended change on top of it, so nothing is silently lost.
     await loadDB();
-    if(myNewIssues.length) {
-      const existingIds = new Set(db.issues.map(i => i.id));
-      myNewIssues.forEach(iss => { if(!existingIds.has(iss.id)) db.issues.push(iss); });
-    }
+    if(typeof mutateOnConflict === 'function') mutateOnConflict(db);
     const content2 = dbToBase64();
     const resp2 = await fetch(`https://api.github.com/repos/${REPO}/contents/${DB_PATH}`, {
       method:'PUT',
@@ -1002,7 +996,12 @@ async function submitIssues() {
       });
     }
     db.lastUpdated = timestamp;
-    await saveDB(justAddedIds);
+    const myNewIssues = db.issues.filter(i => justAddedIds.includes(i.id));
+    await saveDB((freshDb) => {
+      const existingIds = new Set(freshDb.issues.map(i => i.id));
+      myNewIssues.forEach(iss => { if(!existingIds.has(iss.id)) freshDb.issues.push(iss); });
+      freshDb.lastUpdated = timestamp;
+    });
     hideSpinner();
     selectedRoom = '';
     document.querySelectorAll('.room-chip').forEach(c=>c.classList.remove('selected'));
@@ -1306,7 +1305,11 @@ async function toggleAssign(issueId, person, el) {
     const idx = issue.assignedTo.indexOf(person);
     if(idx>=0) issue.assignedTo.splice(idx,1);
     else issue.assignedTo.push(person);
-    await saveDB();
+    const finalAssignedTo = [...issue.assignedTo];
+    await saveDB((freshDb) => {
+      const i2 = freshDb.issues.find(i=>i.id===issueId);
+      if(i2) i2.assignedTo = finalAssignedTo;
+    });
     hideSpinner();
     buildAssigneeFilter();
     renderDashboard();
@@ -1324,14 +1327,16 @@ function toggleCompNote(id) {
 }
 
 async function saveCompNote(id, note) {
-  // Debounce - save after typing stops
   clearTimeout(window._compNoteTimer);
   window._compNoteTimer = setTimeout(async () => {
     try {
       await loadDB();
       const issue = db.issues.find(i=>i.id===id);
       if(issue) issue.completionNote = note;
-      await saveDB();
+      await saveDB((freshDb) => {
+        const i2 = freshDb.issues.find(i=>i.id===id);
+        if(i2) i2.completionNote = note;
+      });
     } catch(e) { console.error('Failed to save note:', e); }
   }, 1000);
 }
@@ -1341,25 +1346,29 @@ async function deleteIssue(id) {
   try {
     await loadDB();
     db.issues = db.issues.filter(i => i.id !== id);
-    await saveDB();
+    await saveDB((freshDb) => {
+      freshDb.issues = freshDb.issues.filter(i => i.id !== id);
+    });
     hideSpinner();
     renderDashboard();
   } catch(e) { hideSpinner(); alert('Failed: ' + e.message); }
 }
 
 async function toggleDone(id, note) {
-  console.log('toggleDone called with id:', id);
   showSpinner('Updating...');
   try {
     await loadDB();
     const issue = db.issues.find(i=>i.id===id);
-    console.log('Found issue:', issue);
-    if(issue){
-      issue.done = !issue.done;
-      if(note) issue.completionNote = note;
-      if(!issue.done) issue.completionNote = '';
-    }
-    await saveDB();
+    if(!issue) { hideSpinner(); return; }
+    issue.done = !issue.done;
+    if(note) issue.completionNote = note;
+    if(!issue.done) issue.completionNote = '';
+    const finalDone = issue.done;
+    const finalNote = issue.completionNote;
+    await saveDB((freshDb) => {
+      const i2 = freshDb.issues.find(i=>i.id===id);
+      if(i2){ i2.done = finalDone; i2.completionNote = finalNote; }
+    });
     hideSpinner();
     buildAssigneeFilter();
     renderDashboard();
@@ -1417,17 +1426,23 @@ async function bulkAssign() {
   const person = document.getElementById('bulk-assign-select').value;
   if(!person){ alert('Select a person to assign to.'); return; }
   if(selectedIssueIds.size === 0){ alert('No issues selected.'); return; }
+  const ids = Array.from(selectedIssueIds);
   showSpinner('Assigning...');
   try {
     await loadDB();
-    selectedIssueIds.forEach(id => {
+    ids.forEach(id => {
       const issue = db.issues.find(i=>i.id===id);
       if(issue){
         if(!issue.assignedTo) issue.assignedTo = [];
         if(!issue.assignedTo.includes(person)) issue.assignedTo.push(person);
       }
     });
-    await saveDB();
+    await saveDB((freshDb) => {
+      ids.forEach(id => {
+        const i2 = freshDb.issues.find(i=>i.id===id);
+        if(i2){ if(!i2.assignedTo) i2.assignedTo=[]; if(!i2.assignedTo.includes(person)) i2.assignedTo.push(person); }
+      });
+    });
     hideSpinner();
     clearSelection();
     buildAssigneeFilter();
@@ -1437,14 +1452,20 @@ async function bulkAssign() {
 
 async function bulkDone() {
   if(selectedIssueIds.size === 0){ alert('No issues selected.'); return; }
+  const ids = Array.from(selectedIssueIds);
   showSpinner('Updating...');
   try {
     await loadDB();
-    selectedIssueIds.forEach(id => {
+    ids.forEach(id => {
       const issue = db.issues.find(i=>i.id===id);
       if(issue) issue.done = true;
     });
-    await saveDB();
+    await saveDB((freshDb) => {
+      ids.forEach(id => {
+        const i2 = freshDb.issues.find(i=>i.id===id);
+        if(i2) i2.done = true;
+      });
+    });
     hideSpinner();
     clearSelection();
     renderDashboard();
@@ -1603,7 +1624,12 @@ async function saveWOPhase() {
       'HVAC': document.getElementById('phase-hvac').value.trim(),
       'Admin': document.getElementById('phase-admin').value.trim(),
     };
-    await saveDB();
+    const finalWoConfig = {...db.woConfig};
+    const finalPhaseConfig = {...db.phaseConfig};
+    await saveDB((freshDb) => {
+      freshDb.woConfig = finalWoConfig;
+      freshDb.phaseConfig = finalPhaseConfig;
+    });
     hideSpinner();
     closeWOModal();
     renderDashboard();
