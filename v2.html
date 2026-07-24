@@ -1793,16 +1793,24 @@ loadDB().then(() => {
   const openCount = db.issues.filter(i=>!i.allClear&&!i.done).length;
   const badge = document.getElementById('manage-badge');
   if(badge){ if(openCount>0){badge.textContent=openCount;badge.style.display='inline';}else{badge.style.display='none';} }
-  // Check for pending unsaved data from a previous failed save
+  // Check for pending unsaved data from a previous failed save.
+  // Merge only the NEW issues from the pending copy into the current (fresh)
+  // server data — never replace db wholesale, since other people may have
+  // submitted legitimate entries while this device was offline.
   const pending = localStorage.getItem('pending_save');
   if(pending) {
     try {
       const pendingDb = JSON.parse(pending);
-      if(pendingDb.issues && pendingDb.issues.length > db.issues.length) {
-        db = pendingDb;
-        saveDB().then(() => {
+      const existingIds = new Set(db.issues.map(i => i.id));
+      const toMerge = (pendingDb.issues || []).filter(i => !existingIds.has(i.id));
+      if(toMerge.length) {
+        db.issues.push(...toMerge);
+        saveDB((freshDb) => {
+          const ids2 = new Set(freshDb.issues.map(i => i.id));
+          toMerge.forEach(iss => { if(!ids2.has(iss.id)) freshDb.issues.push(iss); });
+        }).then(() => {
           localStorage.removeItem('pending_save');
-          showBanner('Pending data synced to server.', 'green');
+          showBanner(`Synced! ${toMerge.length} pending inspection${toMerge.length>1?'s':''} saved to server.`, 'green');
         }).catch(() => {});
       } else {
         localStorage.removeItem('pending_save');
