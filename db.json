@@ -5432,12 +5432,12 @@
       "editedAt": "7/24/2026, 2:47 PM"
     },
     {
-      "id": "1784918881694-jhpr5lbhlv8-76yua1jd2kb",
+      "id": "1784919086439-ult37eu6orm-c7h3rl9cike",
       "room": "30",
       "area": "East Range",
       "trade": "Admin",
       "inspector": "Uriel",
-      "timestamp": "7/24/2026, 2:48 PM",
+      "timestamp": "7/24/2026, 2:51 PM",
       "cat": "Floor Condition",
       "item": "Modern/Poly finish, Grade 4/5",
       "note": "",
@@ -5446,12 +5446,30 @@
       "assignedTo": [],
       "completionNote": "",
       "generalNote": "",
-      "editedBy": "",
-      "editedAt": ""
+      "editedBy": "Uriel",
+      "editedAt": "7/24/2026, 2:51 PM"
+    },
+    {
+      "id": "1784919086439-syizvc7dd4-cimx1c664hr",
+      "room": "30",
+      "area": "East Range",
+      "trade": "Admin",
+      "inspector": "Uriel",
+      "timestamp": "7/24/2026, 2:51 PM",
+      "cat": "Floor Condition",
+      "item": "Modern/Poly finish, Grade 3/5",
+      "note": "Scratches. Appears previous floor burn was sanded excessively and has cupping",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "",
+      "editedBy": "Uriel",
+      "editedAt": "7/24/2026, 2:51 PM"
     }
   ],
   "assignments": [],
-  "lastUpdated": "7/24/2026, 2:48 PM",
+  "lastUpdated": "7/24/2026, 2:51 PM",
   "woConfig": {
     "West Lawn": "",
     "West Range": "",
