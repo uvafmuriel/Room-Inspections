@@ -5214,10 +5214,28 @@
       "generalNote": "",
       "editedBy": "Uriel",
       "editedAt": "7/24/2026, 11:26 AM"
+    },
+    {
+      "id": "1784906893624-6h5uw4u6ngh-mc9nrj6ki",
+      "room": "54",
+      "area": "East Range",
+      "trade": "Admin",
+      "inspector": "Randy",
+      "timestamp": "7/24/2026, 11:28 AM",
+      "cat": "Floor Condition",
+      "item": "Grade 2/5",
+      "note": "Repairs needed for burn spots in the floor in front of the hearth",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "",
+      "editedBy": "",
+      "editedAt": ""
     }
   ],
   "assignments": [],
-  "lastUpdated": "7/24/2026, 11:26 AM",
+  "lastUpdated": "7/24/2026, 11:28 AM",
   "woConfig": {
     "West Lawn": "",
     "West Range": "",
