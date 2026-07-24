@@ -4676,6 +4676,24 @@
       "done": true,
       "allClear": true,
       "assignedTo": []
+    },
+    {
+      "id": "1784903963047-khm5t8s0th-wp8cw3aei4p",
+      "room": "38",
+      "area": "East Range",
+      "trade": "Admin",
+      "inspector": "Uriel",
+      "timestamp": "7/24/2026, 10:39 AM",
+      "cat": "Fireplace",
+      "item": "Brush missing/broken",
+      "note": "",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "",
+      "editedBy": "",
+      "editedAt": ""
     }
   ],
   "assignments": [],
