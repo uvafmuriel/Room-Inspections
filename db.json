@@ -5412,6 +5412,20 @@
       "generalNote": "",
       "editedBy": "",
       "editedAt": ""
+    },
+    {
+      "id": "test-verify-999",
+      "room": "TEST",
+      "area": "West Lawn",
+      "trade": "Admin",
+      "inspector": "SystemCheck",
+      "timestamp": "7/24/2026, 12:00 PM",
+      "cat": "Other",
+      "item": "TEST ENTRY - DELETE ME",
+      "note": "",
+      "done": false,
+      "allClear": false,
+      "assignedTo": []
     }
   ],
   "assignments": [],
