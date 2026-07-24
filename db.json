@@ -5466,10 +5466,28 @@
       "generalNote": "",
       "editedBy": "Uriel",
       "editedAt": "7/24/2026, 2:51 PM"
+    },
+    {
+      "id": "1784919154478-c53udtvdbg-jgdekto8rdc",
+      "room": "28",
+      "area": "East Range",
+      "trade": "Admin",
+      "inspector": "Uriel",
+      "timestamp": "7/24/2026, 2:52 PM",
+      "cat": "Floor Condition",
+      "item": "Modern/Poly finish, Grade 2/5",
+      "note": "Floor repair in front of radiator from water damage",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "",
+      "editedBy": "",
+      "editedAt": ""
     }
   ],
   "assignments": [],
-  "lastUpdated": "7/24/2026, 2:51 PM",
+  "lastUpdated": "7/24/2026, 2:52 PM",
   "woConfig": {
     "West Lawn": "",
     "West Range": "",
