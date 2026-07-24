@@ -1035,11 +1035,20 @@ async function submitIssues() {
       if(!pending) return;
       window.removeEventListener('online', retryPending);
       try {
-        db = JSON.parse(pending);
+        const pendingDb = JSON.parse(pending);
+        // Load the current server state fresh, then merge in any issues from the
+        // pending local copy that the server doesn't have yet (don't just overwrite —
+        // other people may have submitted in the meantime too).
         await loadDB();
-        await saveDB();
+        const existingIds = new Set(db.issues.map(i => i.id));
+        const toMerge = (pendingDb.issues || []).filter(i => !existingIds.has(i.id));
+        db.issues.push(...toMerge);
+        await saveDB((freshDb) => {
+          const ids2 = new Set(freshDb.issues.map(i => i.id));
+          toMerge.forEach(iss => { if(!ids2.has(iss.id)) freshDb.issues.push(iss); });
+        });
         localStorage.removeItem('pending_save');
-        showBanner('Synced! All pending inspections saved to server.', 'green');
+        if(toMerge.length) showBanner(`Synced! ${toMerge.length} pending inspection${toMerge.length>1?'s':''} saved to server.`, 'green');
       } catch(re) { console.warn('Retry failed:', re); }
     }, {once:true});
   }
@@ -1667,8 +1676,11 @@ async function startReset() {
       body: JSON.stringify({ message: `Archive ${year} inspection data`, content: archiveContent })
     });
     // Reset db
-    db = { issues: [], lastUpdated: '' };
-    await saveDB();
+    db = { issues: [], lastUpdated: '', woConfig: db.woConfig, phaseConfig: db.phaseConfig };
+    await saveDB((freshDb) => {
+      freshDb.issues = [];
+      freshDb.lastUpdated = '';
+    });
     hideSpinner();
     document.getElementById('reset-panel').style.display = 'none';
     renderDashboard();
