@@ -4596,7 +4596,7 @@
       "assignedTo": []
     },
     {
-      "id": "1784903481703-rjpf1n0oosh-rejxhka2878",
+      "id": "1784903519776-2xlvzbf08pk-ayehiirtxqb",
       "room": "32",
       "area": "East Range",
       "trade": "Admin",
@@ -4610,11 +4610,11 @@
       "assignedTo": [],
       "completionNote": "",
       "generalNote": "",
-      "editedBy": "",
-      "editedAt": ""
+      "editedBy": "Uriel",
+      "editedAt": "7/24/2026, 10:31 AM"
     },
     {
-      "id": "1784903481704-bxsnhkctyy-mg9n370n9lj",
+      "id": "1784903519776-ameisqobmak-04jaz9iyt5kp",
       "room": "32",
       "area": "East Range",
       "trade": "Admin",
@@ -4628,8 +4628,26 @@
       "assignedTo": [],
       "completionNote": "",
       "generalNote": "",
-      "editedBy": "",
-      "editedAt": ""
+      "editedBy": "Uriel",
+      "editedAt": "7/24/2026, 10:31 AM"
+    },
+    {
+      "id": "1784903519776-kkuxebieo6t-tru55it0lnk",
+      "room": "32",
+      "area": "East Range",
+      "trade": "Admin",
+      "inspector": "Uriel",
+      "timestamp": "7/24/2026, 10:31 AM",
+      "cat": "Bike Lock & Cable",
+      "item": "Missing bike lock",
+      "note": "Has cable. Needs lock",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "",
+      "editedBy": "Uriel",
+      "editedAt": "7/24/2026, 10:31 AM"
     }
   ],
   "assignments": [],
