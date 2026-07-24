@@ -4026,6 +4026,24 @@
       "done": true,
       "allClear": true,
       "assignedTo": []
+    },
+    {
+      "id": "1784896185158-62jxkxrv9k9-xuf7dyo71w",
+      "room": "18",
+      "area": "East Lawn",
+      "trade": "Admin",
+      "inspector": "Uriel",
+      "timestamp": "7/24/2026, 8:29 AM",
+      "cat": "Fireplace",
+      "item": "Screen missing/broken",
+      "note": "Handle fell off",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "",
+      "editedBy": "",
+      "editedAt": ""
     }
   ],
   "assignments": [],
