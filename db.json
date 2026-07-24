@@ -4172,10 +4172,28 @@
       "done": true,
       "allClear": true,
       "assignedTo": []
+    },
+    {
+      "id": "1784899057508-rc4a55smqol-we8n66otk1p",
+      "room": "6",
+      "area": "East Range",
+      "trade": "Admin",
+      "inspector": "Uriel",
+      "timestamp": "7/24/2026, 9:17 AM",
+      "cat": "Fireplace",
+      "item": "Brush missing/broken",
+      "note": "",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "",
+      "editedBy": "",
+      "editedAt": ""
     }
   ],
   "assignments": [],
-  "lastUpdated": "7/24/2026, 9:12 AM",
+  "lastUpdated": "7/24/2026, 9:17 AM",
   "woConfig": {
     "West Lawn": "",
     "West Range": "",
