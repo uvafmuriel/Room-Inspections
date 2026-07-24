@@ -5124,10 +5124,28 @@
       "generalNote": "",
       "editedBy": "",
       "editedAt": ""
+    },
+    {
+      "id": "1784906636749-al6uv1j8mdo-gi0ywe3ikth",
+      "room": "48",
+      "area": "East Range",
+      "trade": "Admin",
+      "inspector": "Randy",
+      "timestamp": "7/24/2026, 11:23 AM",
+      "cat": "Floor Condition",
+      "item": "Modern/Poly finish, Grade 4/5",
+      "note": "Overall, floor and condition is excellent. One small area inside sink closet that needs to be refinished.",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "",
+      "editedBy": "",
+      "editedAt": ""
     }
   ],
   "assignments": [],
-  "lastUpdated": "7/24/2026, 11:22 AM",
+  "lastUpdated": "7/24/2026, 11:23 AM",
   "woConfig": {
     "West Lawn": "",
     "West Range": "",
