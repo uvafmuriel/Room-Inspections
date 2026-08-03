@@ -5824,10 +5824,28 @@
       "generalNote": "",
       "editedBy": "Uriel",
       "editedAt": "8/3/2026, 9:44 AM"
+    },
+    {
+      "id": "1785764842922-o4t8rppnz5p-bc2gbu7e48k",
+      "room": "6",
+      "area": "East Lawn",
+      "trade": "Admin",
+      "inspector": "Uriel",
+      "timestamp": "8/3/2026, 9:47 AM",
+      "cat": "Floor Condition",
+      "item": "Modern/Poly finish, Grade 2/5",
+      "note": "Scratches and dull finish",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "",
+      "editedBy": "",
+      "editedAt": ""
     }
   ],
   "assignments": [],
-  "lastUpdated": "8/3/2026, 9:44 AM",
+  "lastUpdated": "8/3/2026, 9:47 AM",
   "woConfig": {
     "West Lawn": "",
     "West Range": "",
