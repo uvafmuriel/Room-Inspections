@@ -5842,10 +5842,28 @@
       "generalNote": "",
       "editedBy": "",
       "editedAt": ""
+    },
+    {
+      "id": "1785764966433-44lfpsga0wh-2uoalc3kdvm",
+      "room": "8",
+      "area": "East Lawn",
+      "trade": "Admin",
+      "inspector": "Randy",
+      "timestamp": "8/3/2026, 9:49 AM",
+      "cat": "Floor Condition",
+      "item": "Modern/Poly finish, Grade 2/5",
+      "note": "Dull finish and splintering boards in front of the desk",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "",
+      "editedBy": "",
+      "editedAt": ""
     }
   ],
   "assignments": [],
-  "lastUpdated": "8/3/2026, 9:47 AM",
+  "lastUpdated": "8/3/2026, 9:49 AM",
   "woConfig": {
     "West Lawn": "",
     "West Range": "",
