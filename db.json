@@ -5716,10 +5716,28 @@
       "done": true,
       "allClear": true,
       "assignedTo": []
+    },
+    {
+      "id": "1785764415622-3l9pkb3xved-u1pkobc69g9",
+      "room": "4",
+      "area": "East Lawn",
+      "trade": "Admin",
+      "inspector": "Uriel",
+      "timestamp": "8/3/2026, 9:40 AM",
+      "cat": "Fireplace",
+      "item": "Tongs missing/broken",
+      "note": "",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "",
+      "editedBy": "",
+      "editedAt": ""
     }
   ],
   "assignments": [],
-  "lastUpdated": "8/3/2026, 9:39 AM",
+  "lastUpdated": "8/3/2026, 9:40 AM",
   "woConfig": {
     "West Lawn": "",
     "West Range": "",
