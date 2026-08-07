@@ -2129,7 +2129,9 @@
       "note": "Vacuum and clean fireplace box opening and touchup fireplace surround (black)",
       "done": false,
       "allClear": false,
-      "assignedTo": [],
+      "assignedTo": [
+        "Bryan"
+      ],
       "completionNote": "",
       "generalNote": "",
       "editedBy": "",
