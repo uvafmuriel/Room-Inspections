@@ -5970,10 +5970,28 @@
       "generalNote": "",
       "editedBy": "",
       "editedAt": ""
+    },
+    {
+      "id": "1786551117565-avb7dxvc8ka-e7zrve4dknq",
+      "room": "10",
+      "area": "East Lawn",
+      "trade": "Admin",
+      "inspector": "Randy",
+      "timestamp": "8/12/2026, 12:11 PM",
+      "cat": "Furniture",
+      "item": "Rocking chair plaque missing",
+      "note": "",
+      "done": false,
+      "allClear": false,
+      "assignedTo": [],
+      "completionNote": "",
+      "generalNote": "",
+      "editedBy": "",
+      "editedAt": ""
     }
   ],
   "assignments": [],
-  "lastUpdated": "8/3/2026, 9:53 AM",
+  "lastUpdated": "8/12/2026, 12:11 PM",
   "woConfig": {
     "West Lawn": "",
     "West Range": "",
