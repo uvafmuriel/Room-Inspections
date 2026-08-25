@@ -1137,7 +1137,7 @@
       "cat": "Paint & Plaster",
       "item": "Remove tape adhesive from exterior door panels",
       "note": "",
-      "done": false,
+      "done": true,
       "allClear": false,
       "assignedTo": [],
       "completionNote": "",
