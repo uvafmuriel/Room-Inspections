@@ -1121,7 +1121,9 @@
       "note": "Great two based on finish where and floor scratches candidate for possible refinishing next year",
       "done": true,
       "allClear": false,
-      "assignedTo": [],
+      "assignedTo": [
+        "Jon"
+      ],
       "completionNote": "",
       "generalNote": "",
       "editedBy": "",
